@@ -25,5 +25,11 @@
     "matches": ["<all_urls>"],
     "js": ["js/hints.js"],
     "all_frames": true
-  }]
+  }],
+  "commands": {
+    "display-hints": {
+      "suggested_key": { "default": "Alt+Space" },
+      "description": "Show/hide the little green labels to help you to browse with your keyboard"
+    }
+  }
 }

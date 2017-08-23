@@ -7,3 +7,19 @@ function openNewTabOrWindow (request) {
     browser.tabs.create({ "url": request.url });
 }
 browser.runtime.onMessage.addListener(openNewTabOrWindow);
+
+/**
+ * Fired when a registered command is activated using a keyboard shortcut.
+ *
+ * In this sample extension, there is only one registered command: "Alt+Space".
+ */
+function getActiveTab () {
+  return browser.tabs.query({ "active": true, "currentWindow": true });
+}
+browser.commands.onCommand.addListener(function (command) {
+  if (command === "display-hints") {
+    getActiveTab().then(function (tabs) {
+      browser.tabs.sendMessage(tabs[0].id, { "command": command });
+    });
+  }
+});

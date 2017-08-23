@@ -122,24 +122,26 @@ function is_command (e) {
 }
 
 // set key handler
-window.addEventListener("keyup", function(e) {
-  if (is_lshift(e) && is_alt(e)) {
-    if (ui_visible)
-      remove_ui();
-    else
-      create_ui();
+window.addEventListener("keyup", function (e) {
+  if (!ui_visible) return false;
 
-  } else if (ui_visible) {
-    if(e.key == cancelkey) {
-      remove_ui();
+  if(is_escape(e)) {
+    remove_ui();
 
-    } else if(e.key == newwinkey || e.key == newtabkey || e.key == openkey) {
-      open_link(input, e.key);
+  } else if (is_command(e)) {
+    open_link(input, e.key);
 
-    } else if(Number.isInteger(Number.parseInt(e.key))) {
-      input += String.fromCharCode(e.keyCode);
-      if (!hl(input))
-        remove_ui();
-    }
+  } else if (Number.isInteger(Number.parseInt(e.key))) {
+    input += String.fromCharCode(e.keyCode);
+    if (!hl(input)) remove_ui();
   }
 }, false);
+
+function toggle_ui (request) {
+  if (!request.command || request.command !== "display-hints") return;
+  if (ui_visible)
+    remove_ui();
+  else
+    create_ui();
+}
+browser.runtime.onMessage.addListener(toggle_ui);
