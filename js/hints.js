@@ -2,11 +2,13 @@
 // christian hahn <ch radamanthys de>, sep 2010
 // étienne deparis <etienne depar is>, mar 2016
 
-// config , any css
+// Default keys
 var cancelkey   = "c";
 var newwinkey   = "w";
 var newtabkey   = "t";
 var openkey     = "f";
+
+// styles
 var label_style = {
   "color": "black",
   "fontSize": "10px",
@@ -17,13 +19,16 @@ var label_style = {
   "position": "absolute",
   "zIndex": 99
 };
-var hl_style    = { "backgroundColor": "#E3FF38","fontSize": "15px" };
-var nr_base     = 5;   // >=10 : normal integer,
+var hl_style = {
+  "backgroundColor": "#E3FF38",
+  "fontSize": "15px"
+};
 
-// globals
-var labels     = new Object();
+// Globals
+var nr_base = 5;   // >=10 : normal integer,
+var labels = new Object();
 var ui_visible = false;
-var input      = "";
+var input = "";
 
 // functions
 function hl (t) {
