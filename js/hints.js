@@ -49,11 +49,12 @@ function hl (t) {
 function open_link (id, action) {
   try {
     var a = labels[input].a;
-    if(a && action == openkey)
+    if (!a) throw "no link found";
+    if(action === openkey || action === "Enter")
       window.location.href = a.href;
-    else if (a && action == newtabkey)
+    else if (action === newtabkey)
       browser.runtime.sendMessage({ "url": a.href });
-    else if (a && action == newwinkey)
+    else if (action === newwinkey)
       window.open(a.href);
   } catch (e) {
     console.error("Simple Hinting extension: ", e);
@@ -104,12 +105,20 @@ function base (n, b) {
   return res.reverse().join("");
 }
 
-function is_lshift(e) {
-  return (e.key == "Shift" || e.key == "GroupPrevious" || e.shiftKey);
+function is_lshift (e) {
+  return (e.key === "Shift" || e.key === "GroupPrevious" || e.shiftKey);
 }
 
-function is_alt(e) {
-  return (e.key == "Alt" || e.key == "Meta" || e.altKey);
+function is_alt (e) {
+  return (e.key === "Alt" || e.key === "Meta" || e.altKey);
+}
+
+function is_escape (e) {
+  return (e.key === "Escape" || e.key === "Esc" || e.key === cancelkey);
+}
+
+function is_command (e) {
+  return (e.key === newwinkey || e.key === newtabkey || e.key === openkey || e.key === "Enter");
 }
 
 // set key handler
