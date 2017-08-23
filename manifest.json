@@ -8,6 +8,7 @@
     "96": "img/icon96.png"
   },
   "author": "Étienne Deparis",
+  "homepage_url": "https://git.deparis.io/simple_hinting/about/",
   "applications": {
     "gecko": {
       "id": "simple_hinting@umaneti.net",
