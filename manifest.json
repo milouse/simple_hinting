@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "Simple Hinting",
+  "version": "0.0.2",
+  "description": "Allow keyboard browsing through links hinting.",
+  "icons": {
+    "48": "img/icon48.png",
+    "96": "img/icon96.png"
+  },
+  "author": "Étienne Deparis",
+  "applications": {
+    "gecko": {
+      "id": "simple_hinting@umaneti.net",
+      "strict_min_version": "56.0"
+    }
+  },
+  "permissions": ["tabs"],
+  "background": {
+    "scripts": ["js/opentab.js"]
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["js/hints.js"],
+    "all_frames": true
+  }]
+}
