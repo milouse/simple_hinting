@@ -1,4 +1,9 @@
-function openNewTab(dataUrl) {
-  browser.tabs.create(dataUrl);
+function openNewTabOrWindow (request) {
+  if (!request.url) return;
+  if (!request.type) request["type"] = "tab";
+  if (request.type === "window")
+    browser.windows.create({ "url": request.url });
+  else
+    browser.tabs.create({ "url": request.url });
 }
-browser.runtime.onMessage.addListener(openNewTab);
+browser.runtime.onMessage.addListener(openNewTabOrWindow);

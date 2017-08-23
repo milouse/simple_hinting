@@ -55,7 +55,7 @@ function open_link (id, action) {
     else if (action === newtabkey)
       browser.runtime.sendMessage({ "url": a.href });
     else if (action === newwinkey)
-      window.open(a.href);
+      browser.runtime.sendMessage({ "url": a.href, "type": "window" });
   } catch (e) {
     console.error("Simple Hinting extension: ", e);
   } finally {
