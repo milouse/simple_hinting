@@ -33,13 +33,13 @@ var input = "";
 // functions
 function hl (t) {
   var at_least_one_match = false;
-  for(var id in labels) {
+  for(let id in labels) {
     if (t && id.match("^" + t) == t) {
       at_least_one_match = true;
-      for(var s in hl_style)
+      for(let s in hl_style)
         labels[id].rep.style[s] = hl_style[s];
     } else {
-      for(var s in label_style)
+      for(let s in label_style)
         labels[id].rep.style[s] = label_style[s];
     }
   }
@@ -64,11 +64,9 @@ function open_link (id, action) {
 
 // Remove labels from the DOM
 function remove_ui () {
-  for(var id in labels) {
-    var pe = labels[id].rep.parentElement;
-    if (pe) {
-      pe.removeChild(labels[id].rep);
-    }
+  for(let id in labels) {
+    let pe = labels[id].rep.parentElement;
+    if (pe) pe.removeChild(labels[id].rep);
   }
   labels = new Object();
   ui_visible = false;
@@ -78,16 +76,16 @@ function remove_ui () {
 // Create labels when needed
 function create_ui () {
   var ankers = document.getElementsByTagName("a");
-  for (var i = 0; i < ankers.length; i++) {
-    var a = ankers[i];
+  for (let i = 0; i < ankers.length; i++) {
+    let a = ankers[i];
     if (!a.href) continue;
 
-    var b = base(i+1, nr_base);
+    let b = base(i+1, nr_base);
 
     var d = document.createElement("span");
     d.textContent = b;
 
-    for(var s in label_style)
+    for(let s in label_style)
       d.style[s] = label_style[s];
 
     labels[b] = { "a": a, "rep": d };
@@ -97,9 +95,9 @@ function create_ui () {
 }
 
 function base (n, b) {
-  if(b >= 10) return n.toString();
-  var res = new Array();
-  while(n) {
+  if (b >= 10) return n.toString();
+  let res = new Array();
+  while (n) {
     res.push( (n%b +1).toString() )
     n = parseInt( n / b );
   }
