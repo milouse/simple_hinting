@@ -2,6 +2,10 @@
 // christian hahn <ch radamanthys de>, sep 2010
 // étienne deparis <etienne depar is>, mar 2016
 
+if (typeof(browser) === "undefined") {
+  var browser = chrome;
+}
+
 // Default keys
 var cancelkey   = "c";
 var newwinkey   = "w";
@@ -132,7 +136,7 @@ window.addEventListener("keyup", function (e) {
     open_link(input, e.key);
 
   } else if (Number.isInteger(Number.parseInt(e.key))) {
-    input += String.fromCharCode(e.keyCode);
+    input += e.key;
     if (!hl(input)) remove_ui();
   }
 }, false);
