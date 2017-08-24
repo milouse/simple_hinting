@@ -7,10 +7,11 @@ if (typeof(browser) === "undefined") {
 }
 
 // Default keys
-var cancelkey   = "c";
-var newwinkey   = "w";
-var newtabkey   = "t";
-var openkey     = "f";
+var openkey      = "f";
+var newwinkey    = "w";
+var newtabkey    = "t";
+var cancelkey    = "c";
+var incognitokey = "i";
 
 // styles
 var label_style = {
@@ -60,6 +61,8 @@ function open_link (id, action) {
       browser.runtime.sendMessage({ "url": a.href });
     else if (action === newwinkey)
       browser.runtime.sendMessage({ "url": a.href, "type": "window" });
+    else if (action === incognitokey)
+      browser.runtime.sendMessage({ "url": a.href, "type": "incognito" });
   } catch (e) {
     console.error("Simple Hinting extension: ", e);
   } finally {
@@ -122,7 +125,7 @@ function is_escape (e) {
 }
 
 function is_command (e) {
-  return (e.key === newwinkey || e.key === newtabkey || e.key === openkey || e.key === "Enter");
+  return (e.key === newwinkey || e.key === newtabkey || e.key === openkey || e.key === incognitokey || e.key === "Enter");
 }
 
 // set key handler

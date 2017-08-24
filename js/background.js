@@ -7,6 +7,8 @@ function openNewTabOrWindow (request) {
   if (!request.type) request["type"] = "tab";
   if (request.type === "window")
     browser.windows.create({ "url": request.url });
+  else if (request.type === "incognito")
+    browser.windows.create({ "url": request.url, "incognito": true });
   else
     browser.tabs.create({ "url": request.url });
 }
