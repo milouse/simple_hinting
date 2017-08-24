@@ -1,6 +1,8 @@
-// easy links for surf
-// christian hahn <ch radamanthys de>, sep 2010
-// étienne deparis <etienne depar is>, mar 2016
+/**
+ * This script is heavily inspired by previous work by
+ * Christian Hahn (2010) for the surf webbrowser:
+ * http://surf.suckless.org/files/easy_links
+ */
 
 if (typeof(browser) === "undefined") {
   var browser = chrome;
