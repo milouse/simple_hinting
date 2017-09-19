@@ -87,7 +87,13 @@ function remove_ui () {
 
 // Create labels when needed
 function create_ui () {
-  var ankers = document.getElementsByTagName("a");
+  var ankers = Array.from(document.getElementsByTagName("a"));
+
+  // Add current visited page to the ankers
+  var current_page = document.createElement("A");
+  current_page.href = document.location.href;
+  ankers.unshift(current_page);
+
   for (let i = 0; i < ankers.length; i++) {
     let a = ankers[i];
     if (!a.href) continue;
@@ -101,7 +107,18 @@ function create_ui () {
       d.style[s] = label_style[s];
 
     labels[b] = { "a": a, "rep": d };
-    a.parentNode.insertBefore(d, a.nextSibling);
+
+    if (i == 0) {
+      d.textContent += ": " + a.href;
+      d.style.display = "block";
+      d.style.position = "absolute";
+      d.style.top = "0px";
+      d.style.left = "0px";
+      d.style.zIndex = "9999";
+      document.body.appendChild(d);
+    } else {
+      a.parentNode.insertBefore(d, a.nextSibling);
+    }
   }
   ui_visible = true;
 }
