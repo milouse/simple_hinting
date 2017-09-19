@@ -36,7 +36,7 @@ var hl_style = {
 };
 
 // Globals
-var nr_base = 5;   // >=10 : normal integer,
+var nr_base = 10;   // >=10 : normal integer,
 var labels = new Object();
 var ui_visible = false;
 var input = "";
