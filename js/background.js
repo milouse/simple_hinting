@@ -4,8 +4,8 @@ if (typeof(browser) === "undefined") {
 
 function openNewTabOrWindow (request) {
   if (!request.url) return;
-  if (!request.type) request["type"] = "tab";
-  if (request.type === "window")
+  if (!request.type) request["type"] = "newtab";
+  if (request.type === "newwin")
     browser.windows.create({ "url": request.url });
   else if (request.type === "incognito")
     browser.windows.create({ "url": request.url, "incognito": true });

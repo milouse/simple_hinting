@@ -9,11 +9,15 @@ if (typeof(browser) === "undefined") {
 }
 
 // Default keys
-var openkey      = "f";
-var newwinkey    = "w";
-var newtabkey    = "t";
-var cancelkey    = "c";
-var incognitokey = "i";
+var cancelkey = "c";
+var actionkeys = {
+  "f": "follow",
+  "Enter": "follow",
+  "w": "newwin",
+  "t": "newtab",
+  "i": "incognito",
+  "p": "incognito"
+};
 
 // styles
 var label_style = {
@@ -53,20 +57,18 @@ function hl (t) {
   return at_least_one_match;
 }
 
-function open_link (id, action) {
+function open_link (id, keyname) {
   try {
     var a = labels[input].a;
     if (!a) throw "no link found";
-    if(action === openkey || action === "Enter")
+    action = actionkeys[keyname];
+    if (!action) throw "no action found";
+    if(action === "follow")
       window.location.href = a.href;
-    else if (action === newtabkey)
-      browser.runtime.sendMessage({ "url": a.href });
-    else if (action === newwinkey)
-      browser.runtime.sendMessage({ "url": a.href, "type": "window" });
-    else if (action === incognitokey)
-      browser.runtime.sendMessage({ "url": a.href, "type": "incognito" });
+    else
+      browser.runtime.sendMessage({ "url": a.href, "type": action });
   } catch (e) {
-    console.error("Simple Hinting extension: ", e);
+    console.error("[Simple Hinting extension] Failed command", e);
   } finally {
     remove_ui();
   }
@@ -127,7 +129,13 @@ function is_escape (e) {
 }
 
 function is_command (e) {
-  return (e.key === newwinkey || e.key === newtabkey || e.key === openkey || e.key === incognitokey || e.key === "Enter");
+  var is_c = false;
+  try {
+    is_c = Object.keys(actionkeys).indexOf(e.key) !== -1;
+  } catch (e) {
+    console.error("[Simple Hinting extension] Failed reading key", e);
+  }
+  return is_c;
 }
 
 // set key handler
