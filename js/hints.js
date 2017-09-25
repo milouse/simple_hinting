@@ -10,6 +10,7 @@ if (typeof(browser) === "undefined") {
 
 // Default keys
 var cancelkey = "c";
+var viewkey = "v";
 var actionkeys = {
   "f": "follow",
   "Enter": "follow",
@@ -84,6 +85,8 @@ function highlight () {
       for(let s in label_style)
         labels[id].rep.style[s] = label_style[s];
     }
+    if (id != 1)
+      labels[id].rep.textContent = id;
   }
   return at_least_one_match;
 }
@@ -106,6 +109,17 @@ function clean_link(link) {
   }
   link.href.search = "?" + new_query.join("&");
   return link.href.toString();
+}
+
+function view_link () {
+  for(let id in labels) {
+    if (id == 1) continue;
+    if (input && id.match("^" + input) !== null) {
+      labels[id].rep.textContent += ": " + clean_link(labels[id].a);
+      labels[id].rep.style.zIndex = 999;
+      labels[id].rep.style.lineHeight = "1.5em";
+    }
+  }
 }
 
 function open_link (keyname) {
@@ -161,7 +175,7 @@ function create_ui () {
     labels[b] = { "a": a, "rep": d };
 
     if (i == 0) {
-      d.textContent += ": " + a.href;
+      d.textContent += ": " + clean_link(a);
       d.style.display = "block";
       d.style.position = "absolute";
       d.style.top = "0px";
@@ -213,6 +227,9 @@ window.addEventListener("keyup", function (e) {
 
   if(is_escape(e)) {
     remove_ui();
+
+  } else if (e.key === viewkey) {
+    view_link(e.key);
 
   } else if (is_command(e)) {
     open_link(e.key);

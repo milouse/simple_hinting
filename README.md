@@ -17,8 +17,9 @@ The keycodes are the following:
 - `f` (*follow*), browse in current tab;
 - `t` (*tab*), open in a new tab;
 - `w` (*window*), open either a new window;
-  browser preference.
-- `i` (*incognito*) or `p` (*private*), open in a new private window.
+  browser preference;
+- `i` (*incognito*) or `p` (*private*), open in a new private window;
+- `v` (*view*), don't do anything, just display the target URL.
 
 At any time, pressing `c` or `Esc` will cancel the link selection and
 remove all green labels.
