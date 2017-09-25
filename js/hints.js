@@ -76,7 +76,7 @@ var input = "";
 function highlight () {
   var at_least_one_match = false;
   for(let id in labels) {
-    if (input && id.match("^" + input) == input) {
+    if (input && id.match("^" + input) !== null) {
       at_least_one_match = true;
       for(let s in hl_style)
         labels[id].rep.style[s] = hl_style[s];
@@ -166,7 +166,7 @@ function create_ui () {
       d.style.position = "absolute";
       d.style.top = "0px";
       d.style.left = "0px";
-      d.style.zIndex = "9999";
+      d.style.lineHeight = "1.5em";
       document.body.appendChild(d);
     } else {
       a.parentNode.insertBefore(d, a.nextSibling);
