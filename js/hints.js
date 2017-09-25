@@ -35,6 +35,37 @@ var hl_style = {
   "fontSize": "15px"
 };
 
+var unwanted_params = [
+  "utm_source",
+  "utm_medium",
+  "utm_term",
+  "utm_content",
+  "utm_campaign",
+  "utm_reader",
+  "utm_place",
+  "utm_userid",
+  "utm_cid",
+  "ga_source",
+  "ga_medium",
+  "ga_term",
+  "ga_content",
+  "ga_campaign",
+  "ga_place",
+  "yclid",
+  "_openstat",
+  "fb_action_ids",
+  "fb_action_types",
+  "fb_ref",
+  "fb_source",
+  "action_object_map",
+  "action_type_map",
+  "action_ref_map",
+  "_hsenc",
+  "mkt_tok",
+  "gs_l",
+  "xtor"
+];
+
 // Globals
 var nr_base = 10;   // >=10 : normal integer,
 var labels = new Object();
@@ -57,16 +88,37 @@ function hl (t) {
   return at_least_one_match;
 }
 
+function clean_link(link) {
+  if (link.href.search == "") {
+    return link.href.toString();
+  }
+  try {
+    var query = link.href.search.substr(1).split("&");
+  } catch (e) {
+    return link.href.toString();
+  }
+  var new_query = [];
+  for (let i = 0; i < query.length; i++) {
+    let cur_crit = query[i].split("=");
+    if (unwanted_params.indexOf(cur_crit[0]) === -1) {
+      new_query.push(query[i]);
+    }
+  }
+  link.href.search = "?" + new_query.join("&");
+  return link.href.toString();
+}
+
 function open_link (id, keyname) {
   try {
     var a = labels[input].a;
     if (!a) throw "no link found";
     action = actionkeys[keyname];
     if (!action) throw "no action found";
+    let proper_link = clean_link(a);
     if(action === "follow")
-      window.location.href = a.href;
+      window.location.href = proper_link;
     else
-      browser.runtime.sendMessage({ "url": a.href, "type": action });
+      browser.runtime.sendMessage({ "url": proper_link, "type": action });
   } catch (e) {
     console.error("[Simple Hinting extension] Failed command", e);
   } finally {
