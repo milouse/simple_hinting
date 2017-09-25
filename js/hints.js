@@ -73,10 +73,10 @@ var ui_visible = false;
 var input = "";
 
 // functions
-function hl (t) {
+function highlight () {
   var at_least_one_match = false;
   for(let id in labels) {
-    if (t && id.match("^" + t) == t) {
+    if (input && id.match("^" + input) == input) {
       at_least_one_match = true;
       for(let s in hl_style)
         labels[id].rep.style[s] = hl_style[s];
@@ -108,7 +108,7 @@ function clean_link(link) {
   return link.href.toString();
 }
 
-function open_link (id, keyname) {
+function open_link (keyname) {
   try {
     var a = labels[input].a;
     if (!a) throw "no link found";
@@ -215,11 +215,11 @@ window.addEventListener("keyup", function (e) {
     remove_ui();
 
   } else if (is_command(e)) {
-    open_link(input, e.key);
+    open_link(e.key);
 
   } else if (Number.isInteger(Number.parseInt(e.key))) {
     input += e.key;
-    if (!hl(input)) remove_ui();
+    if (!highlight()) remove_ui();
   }
 }, false);
 
