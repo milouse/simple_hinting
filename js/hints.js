@@ -92,13 +92,13 @@ function highlight () {
 }
 
 function clean_link(link) {
-  if (link.href.search == "") {
-    return link.href.toString();
+  if (link.search == "") {
+    return link.toString();
   }
   try {
-    var query = link.href.search.substr(1).split("&");
+    var query = link.search.substr(1).split("&");
   } catch (e) {
-    return link.href.toString();
+    return link.toString();
   }
   var new_query = [];
   for (let i = 0; i < query.length; i++) {
@@ -107,8 +107,12 @@ function clean_link(link) {
       new_query.push(query[i]);
     }
   }
-  link.href.search = "?" + new_query.join("&");
-  return link.href.toString();
+  if (new_query.length > 0) {
+    link.search = "?" + new_query.join("&");
+  } else {
+    link.search = "";
+  }
+  return link.toString();
 }
 
 function view_link () {
