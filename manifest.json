@@ -27,11 +27,5 @@
     "js": ["js/hints.js"],
     "all_frames": true,
     "run_at": "document_start"
-  }],
-  "commands": {
-    "display-hints": {
-      "suggested_key": { "default": "Alt+Space" },
-      "description": "Show/hide the little green labels to help you to browse with your keyboard"
-    }
-  }
+  }]
 }

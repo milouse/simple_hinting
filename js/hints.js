@@ -226,8 +226,14 @@ function is_command (e) {
 }
 
 // set key handler
-window.addEventListener("keyup", function (e) {
-  if (!ui_visible) return false;
+window.addEventListener("keyup", function(e) {
+  if (is_lshift(e) && is_alt(e)) {
+    if (ui_visible) remove_ui();
+    else create_ui();
+    return true
+  } else if (!ui_visible) {
+    return false
+  }
 
   if(is_escape(e)) {
     remove_ui();
@@ -242,13 +248,5 @@ window.addEventListener("keyup", function (e) {
     input += e.key;
     if (!highlight()) remove_ui();
   }
+  return true
 }, false);
-
-function toggle_ui (request) {
-  if (!request.command || request.command !== "display-hints") return;
-  if (ui_visible)
-    remove_ui();
-  else
-    create_ui();
-}
-browser.runtime.onMessage.addListener(toggle_ui);

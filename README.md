@@ -6,7 +6,7 @@ This addon is available on
 [AMO](https://addons.mozilla.org/en-US/firefox/addon/simple-hinting/).
 
 It displays small green numbered labels next to the links of the current
-page when you press `Alt + Space`.
+page when you press `Alt + Shift`.
 
 If you enter one of the displayed numbers, followed by a special
 keycode, you'll be redirected to the link target, either directly or by
