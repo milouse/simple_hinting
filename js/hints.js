@@ -4,10 +4,6 @@
  * http://surf.suckless.org/files/easy_links
  */
 
-if (typeof(browser) === "undefined") {
-  var browser = chrome;
-}
-
 // Default keys
 var cancelkey = "c";
 var viewkey = "v";

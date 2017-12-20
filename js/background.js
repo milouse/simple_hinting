@@ -1,7 +1,3 @@
-if (typeof(browser) === "undefined") {
-  var browser = chrome;
-}
-
 function openNewTabOrWindow (request) {
   if (!request.url) return;
   if (!request.type) request["type"] = "newtab";
