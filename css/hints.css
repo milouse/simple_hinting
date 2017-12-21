@@ -1,0 +1,29 @@
+.sh_hint {
+    background-color: #27FF27;
+    color: black;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: normal;
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    z-index: 99;
+}
+
+.sh_hint_first {
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    line-height: 1.5em;
+}
+
+.sh_hint_hl {
+    background-color: #E3FF38;
+    font-size: 15px;
+}
+
+.sh_hint_view {
+    z-index: 999;
+    line-height: 1.5em;
+}

@@ -16,22 +16,6 @@ var actionkeys = {
   "p": "incognito"
 };
 
-// styles
-var label_style = {
-  "color": "black",
-  "fontSize": "10px",
-  "backgroundColor": "#27FF27",
-  "fontWeight": "normal",
-  "margin": "0px",
-  "padding": "0px",
-  "position": "absolute",
-  "zIndex": 99
-};
-var hl_style = {
-  "backgroundColor": "#E3FF38",
-  "fontSize": "15px"
-};
-
 var unwanted_params = [
   "utm_source",
   "utm_medium",
@@ -75,11 +59,9 @@ function highlight () {
   for(let id in labels) {
     if (input && id.match("^" + input) !== null) {
       at_least_one_match = true;
-      for(let s in hl_style)
-        labels[id].rep.style[s] = hl_style[s];
+      labels[id].rep.classList.add("sh_hint_hl");
     } else {
-      for(let s in label_style)
-        labels[id].rep.style[s] = label_style[s];
+      labels[id].rep.classList.remove("sh_hint_hl");
     }
     if (id != 1)
       labels[id].rep.textContent = id;
@@ -116,8 +98,7 @@ function view_link () {
     if (id == 1) continue;
     if (input && id.match("^" + input) !== null) {
       labels[id].rep.textContent += ": " + clean_link(labels[id].a);
-      labels[id].rep.style.zIndex = 999;
-      labels[id].rep.style.lineHeight = "1.5em";
+      labels[id].rep.classList.add("sh_hint_view");
     }
   }
 }
@@ -167,20 +148,14 @@ function create_ui () {
     let b = base(i+1, nr_base);
 
     var d = document.createElement("span");
+    d.classList.add("sh_hint");
     d.textContent = b;
-
-    for(let s in label_style)
-      d.style[s] = label_style[s];
 
     labels[b] = { "a": a, "rep": d };
 
     if (i == 0) {
       d.textContent += ": " + clean_link(a);
-      d.style.display = "block";
-      d.style.position = "absolute";
-      d.style.top = "0px";
-      d.style.left = "0px";
-      d.style.lineHeight = "1.5em";
+      d.classList.add("sh_hint_first");
       document.body.appendChild(d);
     } else {
       a.parentNode.insertBefore(d, a.nextSibling);
