@@ -4,49 +4,6 @@
  * http://surf.suckless.org/files/easy_links
  */
 
-// Default keys
-var cancelkey = "c";
-var viewkey = "v";
-var actionkeys = {
-  "f": "follow",
-  "Enter": "follow",
-  "w": "newwin",
-  "t": "newtab",
-  "i": "incognito",
-  "p": "incognito"
-};
-
-var unwanted_params = [
-  "utm_source",
-  "utm_medium",
-  "utm_term",
-  "utm_content",
-  "utm_campaign",
-  "utm_reader",
-  "utm_place",
-  "utm_userid",
-  "utm_cid",
-  "ga_source",
-  "ga_medium",
-  "ga_term",
-  "ga_content",
-  "ga_campaign",
-  "ga_place",
-  "yclid",
-  "_openstat",
-  "fb_action_ids",
-  "fb_action_types",
-  "fb_ref",
-  "fb_source",
-  "action_object_map",
-  "action_type_map",
-  "action_ref_map",
-  "_hsenc",
-  "mkt_tok",
-  "gs_l",
-  "xtor"
-];
-
 // Globals
 var nr_base = 10;   // >=10 : normal integer,
 var labels = new Object();
@@ -81,7 +38,7 @@ function clean_link(link) {
   var new_query = [];
   for (let i = 0; i < query.length; i++) {
     let cur_crit = query[i].split("=");
-    if (unwanted_params.indexOf(cur_crit[0]) === -1) {
+    if (my_unwanted_params.indexOf(cur_crit[0]) === -1) {
       new_query.push(query[i]);
     }
   }
@@ -115,7 +72,7 @@ function open_link (keyname) {
     else
       browser.runtime.sendMessage({ "url": proper_link, "type": action });
   } catch (e) {
-    console.error("[Simple Hinting extension] Failed command", e);
+    onError("Failed command: " + e);
   } finally {
     remove_ui();
   }
@@ -191,7 +148,7 @@ function is_command (e) {
   try {
     is_c = Object.keys(actionkeys).indexOf(e.key) !== -1;
   } catch (e) {
-    console.error("[Simple Hinting extension] Failed reading key", e);
+    onError("Failed reading key: " + e);
   }
   return is_c;
 }
@@ -221,3 +178,10 @@ window.addEventListener("keyup", function(e) {
   }
   return true
 }, false);
+
+
+browser.storage.local.get("unwanted_params").then(function (result) {
+  if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
+    my_unwanted_params = result.unwanted_params;
+  }
+}, onError);

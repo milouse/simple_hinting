@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style type="text/css">
+      #simple-hinting-prefs fieldset {
+          border: 0px;
+      }
+      #simple-hinting-prefs label {
+          display: block;
+      }
+      #simple-hinting-prefs input#unwanted-params-field {
+          width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="simple-hinting-prefs">
+      <fieldset>
+        <label for="unwanted-params-field">Unwanted params:</label>
+        <input type="text" id="unwanted-params-field">
+      </fieldset>
+      <fieldset>
+        <input type="submit" value="Save preferences">
+        <input type="button" value="Reset" id="reset-button">
+        <span id="save-status"></span>
+      </fieldset>
+    </form>
+    <script type="application/javascript" src="js/browser-polyfill.min.js"></script>
+    <script type="application/javascript" src="js/default_params.js"></script>
+    <script type="application/javascript" src="js/options.js"></script>
+  </body>
+</html>
