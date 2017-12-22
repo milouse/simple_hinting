@@ -9,8 +9,9 @@
       #simple-hinting-prefs label {
           display: block;
       }
-      #simple-hinting-prefs input#unwanted-params-field {
-          width: 100%;
+      #simple-hinting-prefs textarea#unwanted-params-field {
+          width: 600px;
+          height:100px;
       }
     </style>
   </head>
@@ -18,11 +19,11 @@
     <form id="simple-hinting-prefs">
       <fieldset>
         <label for="unwanted-params-field">Unwanted params:</label>
-        <input type="text" id="unwanted-params-field">
+        <textarea id="unwanted-params-field"></textarea>
       </fieldset>
       <fieldset>
         <input type="submit" value="Save preferences">
-        <input type="button" value="Reset" id="reset-button">
+        <input type="button" value="Reset to defaults" id="reset-button">
         <span id="save-status"></span>
       </fieldset>
     </form>

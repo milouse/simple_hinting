@@ -26,7 +26,7 @@ function highlight () {
   return at_least_one_match;
 }
 
-function clean_link(link) {
+function clean_link (link) {
   if (link.search == "") {
     return link.toString();
   }
@@ -50,12 +50,25 @@ function clean_link(link) {
   return link.toString();
 }
 
+function unshorten_link (link, success) {
+  if (link.hasAttribute("data-expanded-url")){
+    // shortcut for twitter timeline links
+    link.href = link.getAttribute("data-expanded-url");
+  }
+  return success(link);
+}
+
 function view_link () {
   for(let id in labels) {
     if (id == 1) continue;
     if (input && id.match("^" + input) !== null) {
-      labels[id].rep.textContent += ": " + clean_link(labels[id].a);
-      labels[id].rep.classList.add("sh_hint_view");
+      var base_text = labels[id].rep.textContent;
+      labels[id].rep.textContent = base_text + ": parsing URL…";
+      unshorten_link(labels[id].a, function(long_link) {
+        labels[id].a = long_link;
+        labels[id].rep.textContent = base_text + ": " + clean_link(long_link);
+        labels[id].rep.classList.add("sh_hint_view");
+      });
     }
   }
 }
@@ -66,11 +79,13 @@ function open_link (keyname) {
     if (!a) throw "no link found";
     action = actionkeys[keyname];
     if (!action) throw "no action found";
-    let proper_link = clean_link(a);
-    if(action === "follow")
-      window.location.href = proper_link;
-    else
-      browser.runtime.sendMessage({ "url": proper_link, "type": action });
+    unshorten_link(a, function(la) {
+      let proper_link = clean_link(la);
+      if(action === "follow")
+        window.location.href = proper_link;
+      else
+        browser.runtime.sendMessage({ "url": proper_link, "type": action });
+    });
   } catch (e) {
     onError("Failed command: " + e);
   } finally {

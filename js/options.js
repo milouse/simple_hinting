@@ -7,7 +7,7 @@ function saveOptions(event) {
   event.preventDefault();
   event.stopPropagation();
   var unwanted_params = [];
-  let unwanted_params_field = document.querySelector("input#unwanted-params-field");
+  let unwanted_params_field = document.querySelector("textarea#unwanted-params-field");
   if (!unwanted_params_field || unwanted_params_field.value == "") {
     return false;
   }
@@ -26,7 +26,7 @@ function saveOptions(event) {
 document.getElementById("simple-hinting-prefs").addEventListener("submit", saveOptions);
 
 document.getElementById("reset-button").addEventListener("click", function(event) {
-  document.querySelector("input#unwanted-params-field").value = unwanted_params.join(", ");
+  document.querySelector("textarea#unwanted-params-field").value = unwanted_params.join(", ");
   saveOptions(event);
 });
 
@@ -36,7 +36,7 @@ function restoreOptions() {
     if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
       my_unwanted_params = result.unwanted_params;
     }
-    document.querySelector("input#unwanted-params-field").value = my_unwanted_params.join(", ");
+    document.querySelector("textarea#unwanted-params-field").value = my_unwanted_params.join(", ");
   }, onError);
 }
 document.addEventListener("DOMContentLoaded", restoreOptions);
