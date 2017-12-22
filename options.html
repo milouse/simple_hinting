@@ -9,17 +9,31 @@
       #simple-hinting-prefs label {
           display: block;
       }
-      #simple-hinting-prefs textarea#unwanted-params-field {
+      #simple-hinting-prefs textarea#unwanted-params-field,
+      #simple-hinting-prefs textarea#tiny-domains-field {
           width: 600px;
           height:100px;
+      }
+      #simple-hinting-prefs input#unshorten-url-field {
+          width: 600px;
       }
     </style>
   </head>
   <body>
     <form id="simple-hinting-prefs">
       <fieldset>
-        <label for="unwanted-params-field">Unwanted params:</label>
-        <textarea id="unwanted-params-field"></textarea>
+        <p>
+          <label for="unwanted-params-field">Unwanted params:</label>
+          <textarea id="unwanted-params-field"></textarea>
+        </p>
+        <p>
+          <label for="tiny-domains-field">Expandable tiny domains:</label>
+          <textarea id="tiny-domains-field"></textarea>
+        </p>
+        <p>
+          <label for="unshorten-url-field">Unshorten URL service API:</label>
+          <input type="text" id="unshorten-url-field">
+        </p>
       </fieldset>
       <fieldset>
         <input type="submit" value="Save preferences">

@@ -10,6 +10,20 @@ var actionkeys = {
   "p": "incognito"
 };
 
+var tiny_domains = [
+  "bit.ly",
+  "goo.gl",
+  "fb.me",
+  "ow.ly",
+  "po.st",
+  "t.co",
+  "vdn.lv",
+  "kck.st",
+  "tinyurl.com"
+];
+
+var unshorten_service = "https://unshorten.me/s/"
+
 var unwanted_params = [
   "utm_source",
   "utm_medium",

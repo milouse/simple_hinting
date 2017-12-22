@@ -55,7 +55,23 @@ function unshorten_link (link, success) {
     // shortcut for twitter timeline links
     link.href = link.getAttribute("data-expanded-url");
   }
-  return success(link);
+  if (tiny_domains.indexOf(link.hostname) === -1) {
+    return success(link);
+  }
+  try {
+    console.log('will unshorten', link)
+    let req_uri = "https://unshorten.me/s/" + link.href;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", req_uri);
+    xhr.onload = function () {
+      link.href = xhr.responseText;
+      success(link);
+    };
+    xhr.onerror = function () { throw xhr.statusText; };
+    xhr.send();
+  } catch (e) {
+    onError(`Ajax failed ${e}`);
+  }
 }
 
 function view_link () {
@@ -208,8 +224,15 @@ window.addEventListener("keyup", function(e) {
 }, false);
 
 
-browser.storage.local.get("unwanted_params").then(function (result) {
+let opts = ["unwanted_params", "tiny_domains_list", "unshorten_url"];
+browser.storage.local.get(opts).then(function (result) {
   if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
     unwanted_params = result.unwanted_params;
+  }
+  if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
+    tiny_domains = result.tiny_domains_list;
+  }
+  if (result.unshorten_url && result.unshorten_url != "") {
+    unshorten_service = result.unshorten_url;
   }
 }, onError);
