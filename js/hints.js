@@ -26,14 +26,12 @@ function highlight () {
   return at_least_one_match;
 }
 
-function clean_link (link) {
-  if (link.search == "") {
-    return link.toString();
-  }
+function clean_attributes (url_part) {
+  // url_part may be 'search' or 'hash'
   try {
-    var query = link.search.substr(1).split("&");
+    var query = url_part.substr(1).split("&");
   } catch (e) {
-    return link.toString();
+    return url_part;
   }
   var new_query = [];
   for (let i = 0; i < query.length; i++) {
@@ -43,9 +41,17 @@ function clean_link (link) {
     }
   }
   if (new_query.length > 0) {
-    link.search = "?" + new_query.join("&");
-  } else {
-    link.search = "";
+    return new_query.join("&");
+  }
+  return "";
+}
+
+function clean_link (link) {
+  if (link.search != "") {
+    link.search = "?" + clean_attributes(link.search);
+  }
+  if (link.hash != "") {
+    link.hash = "#" + clean_attributes(link.hash);
   }
   return link.toString();
 }
