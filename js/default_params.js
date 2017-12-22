@@ -12,14 +12,15 @@ var actionkeys = {
 
 var tiny_domains = [
   "bit.ly",
-  "goo.gl",
+  "ebx.sh",
   "fb.me",
+  "goo.gl",
+  "kck.st",
   "ow.ly",
   "po.st",
   "t.co",
-  "vdn.lv",
-  "kck.st",
-  "tinyurl.com"
+  "tinyurl.com",
+  "vdn.lv"
 ];
 
 var unshorten_service = "http://deparis.io/unshorten.php?url="
