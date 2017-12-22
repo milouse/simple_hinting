@@ -38,7 +38,7 @@ function clean_link(link) {
   var new_query = [];
   for (let i = 0; i < query.length; i++) {
     let cur_crit = query[i].split("=");
-    if (my_unwanted_params.indexOf(cur_crit[0]) === -1) {
+    if (unwanted_params.indexOf(cur_crit[0]) === -1) {
       new_query.push(query[i]);
     }
   }
@@ -182,6 +182,6 @@ window.addEventListener("keyup", function(e) {
 
 browser.storage.local.get("unwanted_params").then(function (result) {
   if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
-    my_unwanted_params = result.unwanted_params;
+    unwanted_params = result.unwanted_params;
   }
 }, onError);

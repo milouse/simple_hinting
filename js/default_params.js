@@ -43,8 +43,6 @@ var unwanted_params = [
   "xtor"
 ];
 
-var my_unwanted_params = unwanted_params;
-
 function onError(error) {
   let message = `[Simple Hinting extension] ${error}`;
   let pref_msg_status = document.getElementById("save-status");

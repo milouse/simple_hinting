@@ -32,7 +32,7 @@ document.getElementById("reset-button").addEventListener("click", function(event
 
 function restoreOptions() {
   browser.storage.local.get(["unwanted_params"]).then(function (result) {
-    my_unwanted_params = unwanted_params;
+    let my_unwanted_params = unwanted_params;
     if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
       my_unwanted_params = result.unwanted_params;
     }
