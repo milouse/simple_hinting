@@ -85,7 +85,7 @@ function view_link () {
     if (id == 1) continue;
     if (labels[id].a.tagName != 'A') continue;
     if (input && id.match("^" + input) !== null) {
-      var base_text = labels[id].rep.textContent;
+      var base_text = id;
       labels[id].rep.textContent = base_text + ": parsing URL…";
       unshorten_link(labels[id].a, function(long_link) {
         labels[id].a = long_link;
