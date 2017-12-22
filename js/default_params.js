@@ -22,7 +22,7 @@ var tiny_domains = [
   "tinyurl.com"
 ];
 
-var unshorten_service = "https://unshorten.me/s/"
+var unshorten_service = "http://deparis.io/unshorten.php?url="
 
 var unwanted_params = [
   "utm_source",
