@@ -32,6 +32,8 @@ var unwanted_params = [
   "fb_action_types",
   "fb_ref",
   "fb_source",
+  "hc_ref",
+  "fref",
   "action_object_map",
   "action_type_map",
   "action_ref_map",
