@@ -124,7 +124,11 @@ function create_ui () {
       d.classList.add("sh_hint_first");
       document.body.appendChild(d);
     } else {
-      a.parentNode.insertBefore(d, a.nextSibling);
+      if (a.nextSibling) {
+        a.parentNode.insertBefore(d, a.nextSibling);
+      } else {
+        a.parentNode.appendChild(d);
+      }
     }
   }
   ui_visible = true;
