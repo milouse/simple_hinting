@@ -23,7 +23,7 @@ var tiny_domains = [
   "vdn.lv"
 ];
 
-var unshorten_service = "http://deparis.io/unshorten.php?url="
+var unshorten_service = "https://deparis.io/unshorten.php?url="
 
 var unwanted_params = [
   "utm_source",
