@@ -77,6 +77,7 @@ function unshorten_link (link, success) {
 function view_link () {
   for(let id in labels) {
     if (id == 1) continue;
+    if (labels[id].a.tagName != 'A') continue;
     if (input && id.match("^" + input) !== null) {
       var base_text = labels[id].rep.textContent;
       labels[id].rep.textContent = base_text + ": parsing URL…";
@@ -95,18 +96,22 @@ function open_link (keyname) {
     if (!a) throw "no link found";
     action = actionkeys[keyname];
     if (!action) throw "no action found";
-    unshorten_link(a, function(la) {
-      let proper_link = clean_link(la);
-      if(action === "follow")
-        window.location.href = proper_link;
-      else
-        browser.runtime.sendMessage({ "url": proper_link, "type": action });
-    });
   } catch (e) {
     onError("Failed command: " + e);
   } finally {
     remove_ui();
   }
+  if (a.tagName != 'A') {
+    a.focus();
+    return;
+  }
+  unshorten_link(a, function(la) {
+    let proper_link = clean_link(la);
+    if(action === "follow")
+      window.location.href = proper_link;
+    else
+      browser.runtime.sendMessage({ "url": proper_link, "type": action });
+  });
 }
 
 // Remove labels from the DOM
@@ -122,7 +127,8 @@ function remove_ui () {
 
 // Create labels when needed
 function create_ui () {
-  var ankers = Array.from(document.getElementsByTagName("a"));
+  let selectors = "a, input[type=text], input[type=search], textarea";
+  var ankers = Array.from(document.querySelectorAll(selectors));
 
   // Add current visited page to the ankers
   var current_page = document.createElement("A");
@@ -131,7 +137,7 @@ function create_ui () {
 
   for (let i = 0; i < ankers.length; i++) {
     let a = ankers[i];
-    if (!a.href) continue;
+    if (a.tagName == 'A' && !a.href) continue;
     // Are you visible?
     if (a.hidden || a.style.display == "none" ||
         a.style.visibility == "hidden") {
