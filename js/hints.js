@@ -101,6 +101,15 @@ function create_ui () {
   for (let i = 0; i < ankers.length; i++) {
     let a = ankers[i];
     if (!a.href) continue;
+    // Are you visible?
+    if (a.hidden || a.style.display == "none" ||
+        a.style.visibility == "hidden") {
+      continue;
+    }
+    astyles = window.getComputedStyle(a);
+    if (astyles.display == "none" || astyles.visibility == "hidden") {
+      continue;
+    }
 
     let b = base(i+1, nr_base);
 
