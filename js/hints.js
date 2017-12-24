@@ -82,7 +82,7 @@ function unshorten_link (link, success) {
 function view_link () {
   for(let id in labels) {
     if (id == 1) continue;
-    if (labels[id].a.tagName != 'A') continue;
+    if (labels[id].a.tagName != "A") continue;
     if (input && id.match("^" + input) !== null) {
       var base_text = id;
       labels[id].rep.classList.add("sh_hint_view");
@@ -106,7 +106,7 @@ function open_link (keyname) {
   } finally {
     remove_ui();
   }
-  if (a.tagName != 'A') {
+  if (a.tagName != "A") {
     a.focus();
     return;
   }
@@ -142,7 +142,7 @@ function create_ui () {
 
   for (let i = 0; i < ankers.length; i++) {
     let a = ankers[i];
-    if (a.tagName == 'A' && !a.href) continue;
+    if (a.tagName == "A" && !a.href) continue;
     // Are you visible?
     if (a.hidden || a.style.display == "none" ||
         a.style.visibility == "hidden") {
