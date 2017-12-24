@@ -86,11 +86,11 @@ function view_link () {
     if (labels[id].a.tagName != 'A') continue;
     if (input && id.match("^" + input) !== null) {
       var base_text = id;
+      labels[id].rep.classList.add("sh_hint_view");
       labels[id].rep.textContent = base_text + ": parsing URL…";
       unshorten_link(labels[id].a, function(long_link) {
         labels[id].a = long_link;
         labels[id].rep.textContent = base_text + ": " + clean_link(long_link);
-        labels[id].rep.classList.add("sh_hint_view");
       });
     }
   }
