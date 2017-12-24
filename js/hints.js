@@ -26,7 +26,7 @@ function highlight () {
   return at_least_one_match;
 }
 
-function clean_attributes (url_part) {
+function clean_attributes (url_part, symbol) {
   // url_part may be 'search' or 'hash'
   try {
     var query = url_part.substr(1).split("&");
@@ -41,17 +41,17 @@ function clean_attributes (url_part) {
     }
   }
   if (new_query.length > 0) {
-    return new_query.join("&");
+    return symbol + new_query.join("&");
   }
   return "";
 }
 
 function clean_link (link) {
   if (link.search != "") {
-    link.search = "?" + clean_attributes(link.search);
+    link.search = clean_attributes(link.search, "?");
   }
   if (link.hash != "") {
-    link.hash = "#" + clean_attributes(link.hash);
+    link.hash = clean_attributes(link.hash, "#");
   }
   return link.toString();
 }
