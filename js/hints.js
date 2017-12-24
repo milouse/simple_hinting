@@ -70,7 +70,7 @@ function unshorten_link (link, success) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", req_uri);
     xhr.onload = function () {
-      link.href = xhr.responseText;
+      link.href = xhr.responseText.trim();
       success(link);
     };
     xhr.onerror = function () { throw xhr.statusText; };
