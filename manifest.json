@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Simple Hinting",
-  "version": "0.1.0rc3",
+  "version": "0.1.0rc4",
   "description": "Allow keyboard browsing through links hinting.",
   "icons": {
     "48": "img/icon48.png",
