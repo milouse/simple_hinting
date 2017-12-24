@@ -221,6 +221,10 @@ window.addEventListener("keyup", function(e) {
   if(is_escape(e)) {
     remove_ui();
 
+  } else if (e.key == "Backspace") {
+    input = input.slice(0, -1);
+    if (!highlight()) remove_ui();
+
   } else if (e.key === viewkey) {
     view_link(e.key);
 
