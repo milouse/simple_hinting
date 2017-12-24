@@ -66,7 +66,7 @@ function unshorten_link (link, success) {
   }
   try {
     console.log('will unshorten', link)
-    let req_uri = "https://unshorten.me/s/" + link.href;
+    let req_uri = unshorten_service + link.href;
     const xhr = new XMLHttpRequest();
     xhr.open("GET", req_uri);
     xhr.onload = function () {
