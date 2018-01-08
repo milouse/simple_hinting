@@ -14,6 +14,7 @@ var tiny_domains = [
   "bit.ly",
   "ebx.sh",
   "fb.me",
+  "frama.link",
   "goo.gl",
   "kck.st",
   "ow.ly",
