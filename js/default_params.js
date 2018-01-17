@@ -12,6 +12,7 @@ var actionkeys = {
 
 var tiny_domains = [
   "bit.ly",
+  "dlvr.it",
   "ebx.sh",
   "fb.me",
   "frama.link",
