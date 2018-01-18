@@ -89,7 +89,8 @@ function view_link () {
       labels[id].rep.textContent = base_text + ": parsing URL…";
       unshorten_link(labels[id].a, function(long_link) {
         labels[id].a = long_link;
-        labels[id].rep.textContent = base_text + ": " + clean_link(long_link);
+        labels[id].rep.textContent = base_text + col +
+          clean_link(long_link);
       });
     }
   }
@@ -115,7 +116,10 @@ function open_link (keyname) {
     if(action === "follow")
       window.location.href = proper_link;
     else
-      browser.runtime.sendMessage({ "url": proper_link, "type": action });
+      browser.runtime.sendMessage({
+        "url": proper_link,
+        "type": action
+      });
   });
 }
 
@@ -258,7 +262,8 @@ browser.runtime.onMessage.addListener(function(data) {
     console.log("go fix all !");
     return true;
   } else if (data.message == "fix_one" && data['link_uri']) {
-    var all_links = document.querySelectorAll("a[href='" + data.link_uri + "']");
+    var all_links = document.querySelectorAll(
+      "a[href='" + data.link_uri + "']");
     for (let i = 0; i < all_links.length; i++) {
       let link = all_links[i];
       let d = document.createElement("span");
