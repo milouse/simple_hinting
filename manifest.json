@@ -5,7 +5,8 @@
   "description": "Allow keyboard browsing through links hinting.",
   "icons": {
     "48": "img/icon48.png",
-    "96": "img/icon96.png"
+    "96": "img/icon96.png",
+    "128": "img/icon128.png"
   },
   "author": "Étienne Deparis",
   "homepage_url": "https://git.deparis.io/simple_hinting/about/",
