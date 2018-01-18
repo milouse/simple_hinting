@@ -17,6 +17,7 @@ var tiny_domains = [
   "fb.me",
   "frama.link",
   "goo.gl",
+  "is.gd",
   "kck.st",
   "ow.ly",
   "po.st",
