@@ -8,7 +8,7 @@
     "description": "Context menu item label"
   },
   "parsingPlaceholder": {
-    "message": ": parsing URL…",
+    "message": "parsing URL…",
     "description": "Brief message displayed in a link label while expanding / cleaning it"
   },
   "columnSeparator": {
