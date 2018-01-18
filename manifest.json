@@ -2,7 +2,8 @@
   "manifest_version": 2,
   "name": "Simple Hinting",
   "version": "0.1.1",
-  "description": "Allow keyboard browsing through links hinting.",
+  "default_locale": "en",
+  "description": "__MSG_extensionDesc__",
   "icons": {
     "48": "img/icon48.png",
     "96": "img/icon96.png",

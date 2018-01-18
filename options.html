@@ -23,21 +23,25 @@
     <form id="simple-hinting-prefs">
       <fieldset>
         <p>
-          <label for="unwanted-params-field">Unwanted params:</label>
+          <label for="unwanted-params-field"
+                 data-i18n="unwantedParams">Unwanted params:</label>
           <textarea id="unwanted-params-field"></textarea>
         </p>
         <p>
-          <label for="tiny-domains-field">Expandable tiny domains:</label>
+          <label for="tiny-domains-field"
+                 data-i18n="expandableDomains">Expandable tiny domains:</label>
           <textarea id="tiny-domains-field"></textarea>
         </p>
         <p>
-          <label for="unshorten-url-field">Unshorten URL service API:</label>
+          <label for="unshorten-url-field"
+                 data-i18n="unshortenService">Unshorten URL service API:</label>
           <input type="text" id="unshorten-url-field">
         </p>
       </fieldset>
       <fieldset>
-        <input type="submit" value="Save preferences">
-        <input type="button" value="Reset to defaults" id="reset-button">
+        <input type="submit" value="Save preferences" data-i18n="savePrefButton">
+        <input type="button" value="Reset to defaults" id="reset-button"
+               data-i18n="resetPrefButton">
         <span id="save-status"></span>
       </fieldset>
     </form>

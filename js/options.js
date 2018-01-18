@@ -32,7 +32,7 @@ function saveOptions(event) {
     "tiny_domains_list": tiny_domains,
     "unshorten_url": unshorten_service
   }).then(function () {
-    document.getElementById("save-status").textContent = "Options saved!";
+    document.getElementById("save-status").textContent = browser.i18n.getMessage("optionsSaved");
     document.getElementById("save-status").style.color = "green";
     restoreOptions();
   }, onError);
@@ -47,6 +47,16 @@ document.getElementById("reset-button").addEventListener("click", function(event
 });
 
 function restoreOptions() {
+  var i18nElements = document.querySelectorAll("[data-i18n]");
+  for (let i = 0; i < i18nElements.length; i++) {
+    let elem = i18nElements[i];
+    let i18nString = browser.i18n.getMessage(elem.getAttribute("data-i18n"));
+    if (elem.tagName == 'INPUT') {
+      elem.value = i18nString;
+    } else {
+      elem.textContent = i18nString;
+    }
+  }
   let opts = ["unwanted_params", "tiny_domains_list", "unshorten_url"];
   browser.storage.local.get(opts).then(function (result) {
     let my_unwanted_params = unwanted_params;

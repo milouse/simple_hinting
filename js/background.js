@@ -12,7 +12,7 @@ browser.runtime.onMessage.addListener(openNewTabOrWindow);
 
 browser.contextMenus.create({
   id: "sh-fix-link-at-point",
-  title: "Fix this link",
+  title: browser.i18n.getMessage("fixThisLink"),
   contexts: ["link"]
 });
 browser.contextMenus.onClicked.addListener(function(info, tab) {

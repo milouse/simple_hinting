@@ -80,13 +80,15 @@ function unshorten_link (link, success) {
 }
 
 function view_link () {
+  var col = browser.i18n.getMessage("columnSeparator");
   for(let id in labels) {
     if (id == 1) continue;
     if (labels[id].a.tagName != "A") continue;
     if (input && id.match("^" + input) !== null) {
       var base_text = id;
       labels[id].rep.classList.add("sh_hint_view");
-      labels[id].rep.textContent = base_text + ": parsing URL…";
+      labels[id].rep.textContent = base_text + col +
+        browser.i18n.getMessage("parsingPlaceholder");
       unshorten_link(labels[id].a, function(long_link) {
         labels[id].a = long_link;
         labels[id].rep.textContent = base_text + col +
@@ -166,7 +168,8 @@ function create_ui () {
     labels[b] = { "a": a, "rep": d };
 
     if (i == 0) {
-      d.textContent += ": " + clean_link(a);
+      d.textContent += browser.i18n.getMessage("columnSeparator") +
+        clean_link(a);
       d.classList.add("sh_hint_first");
       document.body.appendChild(d);
     } else {
@@ -274,7 +277,7 @@ browser.runtime.onMessage.addListener(function(data) {
       } else {
         link.parentNode.appendChild(d);
       }
-      d.textContent = "parsing URL…";
+      d.textContent = browser.i18n.getMessage("parsingPlaceholder");
       ui_visible = true;
       labels[i] = { "rep": d };
       unshorten_link(link, function(long_link) {

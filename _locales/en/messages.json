@@ -1,0 +1,46 @@
+{
+  "extensionDesc": {
+    "message": "Allow keyboard browsing through links hinting.",
+    "description": "Description of the extension"
+  },
+  "fixThisLink": {
+    "message": "Fix this link",
+    "description": "Context menu item label"
+  },
+  "parsingPlaceholder": {
+    "message": ": parsing URL…",
+    "description": "Brief message displayed in a link label while expanding / cleaning it"
+  },
+  "columnSeparator": {
+    "message": ": ",
+    "description": "How a column must be placed between two sentences"
+  },
+  "optionsSaved": {
+    "message": "Options saved!",
+    "description": "Message displayed when preferences are successfully saved"
+  },
+  "optionsSaved": {
+    "message": "Options saved!",
+    "description": "Message displayed when preferences are successfully saved"
+  },
+  "unwantedParams": {
+    "message": "Unwanted params:",
+    "description": "Unwanted params field label on the preferences page"
+  },
+  "expandableDomains": {
+    "message": "Expandable tiny domains:",
+    "description": "Expandable domains field label on the preferences page"
+  },
+  "unshortenService": {
+    "message": "Unshorten URL service API:",
+    "description": "Unshorten service field label on the preferences page"
+  },
+  "savePrefButton": {
+    "message": "Save preferences",
+    "description": "Submit button of the preferences page"
+  },
+  "resetPrefButton": {
+    "message": "Reset to defaults",
+    "description": "Reset button of the preferences page"
+  }
+}

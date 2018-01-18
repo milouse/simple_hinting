@@ -1,0 +1,42 @@
+{
+  "extensionDesc": {
+    "message": "Permet la navigation au clavier via des étiquettes ajoutés aux liens.",
+    "description": "Description of the extension"
+  },
+  "fixThisLink": {
+    "message": "Corriger ce lien",
+    "description": "Context menu item label"
+  },
+  "parsingPlaceholder": {
+    "message": "nettoyage de l'URL…",
+    "description": "Brief message displayed in a link label while expanding / cleaning it"
+  },
+  "columnSeparator": {
+    "message": " : ",
+    "description": "How a column must be placed between two sentences"
+  },
+  "optionsSaved": {
+    "message": "Préférences enregistrées !",
+    "description": "Message displayed when preferences are successfully saved"
+  },
+  "unwantedParams": {
+    "message": "Paramètres non désirés :",
+    "description": "Unwanted params field label on the preferences page"
+  },
+  "expandableDomains": {
+    "message": "Domaines des liens courts à reconnaître :",
+    "description": "Expandable domains field label on the preferences page"
+  },
+  "unshortenService": {
+    "message": "URL de l'API de conversion des liens courts :",
+    "description": "Unshorten service field label on the preferences page"
+  },
+  "savePrefButton": {
+    "message": "Enregistrer les préférences",
+    "description": "Submit button of the preferences page"
+  },
+  "resetPrefButton": {
+    "message": "Revenir aux paramètres par défaut",
+    "description": "Reset button of the preferences page"
+  }
+}
