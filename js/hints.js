@@ -251,3 +251,33 @@ browser.storage.local.get(opts).then(function (result) {
     unshorten_service = result.unshorten_url;
   }
 }, onError);
+
+browser.runtime.onMessage.addListener(function(data) {
+  if (!data['message']) return false;
+  if (data.message == "fix_all") {
+    console.log("go fix all !");
+    return true;
+  } else if (data.message == "fix_one" && data['link_uri']) {
+    var all_links = document.querySelectorAll("a[href='" + data.link_uri + "']");
+    for (let i = 0; i < all_links.length; i++) {
+      let link = all_links[i];
+      let d = document.createElement("span");
+      d.classList.add("sh_hint");
+      d.classList.add("sh_hint_view");
+      if (link.nextSibling) {
+        link.parentNode.insertBefore(d, link.nextSibling);
+      } else {
+        link.parentNode.appendChild(d);
+      }
+      d.textContent = "parsing URL…";
+      ui_visible = true;
+      labels[i] = { "rep": d };
+      unshorten_link(link, function(long_link) {
+        link.href = long_link;
+        d.textContent = clean_link(long_link);
+      });
+    }
+    return true;
+  }
+  return false;
+});

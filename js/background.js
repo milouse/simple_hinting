@@ -9,3 +9,22 @@ function openNewTabOrWindow (request) {
     browser.tabs.create({ "url": request.url });
 }
 browser.runtime.onMessage.addListener(openNewTabOrWindow);
+
+browser.contextMenus.create({
+  id: "sh-fix-link-at-point",
+  title: "Fix this link",
+  contexts: ["link"]
+});
+browser.contextMenus.onClicked.addListener(function(info, tab) {
+  if (info.menuItemId == "sh-fix-link-at-point") {
+    browser.tabs.query({
+      active: true,
+      currentWindow: true
+    }).then(function (tabs) {
+      browser.tabs.sendMessage(tabs[0].id, {
+        message: "fix_one",
+        link_uri: info.linkUrl
+      });
+    });
+  }
+});
