@@ -19,10 +19,6 @@
     "message": "Options saved!",
     "description": "Message displayed when preferences are successfully saved"
   },
-  "optionsSaved": {
-    "message": "Options saved!",
-    "description": "Message displayed when preferences are successfully saved"
-  },
   "unwantedParams": {
     "message": "Unwanted params:",
     "description": "Unwanted params field label on the preferences page"
