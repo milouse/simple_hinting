@@ -19,6 +19,7 @@ var tiny_domains = [
   "goo.gl",
   "is.gd",
   "kck.st",
+  "mzl.la",
   "ow.ly",
   "po.st",
   "t.co",
