@@ -16,7 +16,7 @@
       "strict_min_version": "56.0"
     }
   },
-  "permissions": ["<all_urls>", "tabs", "storage"],
+  "permissions": ["<all_urls>", "activeTab", "storage"],
   "background": {
     "scripts": ["js/browser-polyfill.min.js", "js/background.js"]
   },
