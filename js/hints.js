@@ -268,8 +268,7 @@ browser.runtime.onMessage.addListener(function(data) {
   for (let i = 0; i < all_links.length; i++) {
     let link = all_links[i];
     let d = document.createElement("span");
-    d.classList.add("sh_hint");
-    d.classList.add("sh_hint_view");
+    d.className = "sh_hint sh_hint_view";
     if (link.nextSibling) {
       link.parentNode.insertBefore(d, link.nextSibling);
     } else {
