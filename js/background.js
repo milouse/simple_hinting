@@ -16,15 +16,9 @@ browser.contextMenus.create({
   contexts: ["link"]
 });
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId == "sh-fix-link-at-point") {
-    browser.tabs.query({
-      active: true,
-      currentWindow: true
-    }).then(function (tabs) {
-      browser.tabs.sendMessage(tabs[0].id, {
-        message: "fix_one",
-        link_uri: info.linkUrl
-      });
-    });
-  }
+  if (info.menuItemId != "sh-fix-link-at-point") return;
+  browser.tabs.sendMessage(tab.id, {
+    message: "fix_one",
+    link_uri: info.linkUrl
+  });
 });
