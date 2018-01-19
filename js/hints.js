@@ -280,6 +280,20 @@ browser.runtime.onMessage.addListener(function(data) {
     unshorten_link(link, function(long_link) {
       let cl = clean_link(long_link);
       link.href = d.textContent = cl;
+      if (link.title != "" &&
+          (link.title.slice(0, 7) == "http://" ||
+           link.title.slice(0, 7) == "https:/")) {
+        link.title = cl;
+      }
+      let link_content = link.textContent.trim();
+      if (link_content.slice(0, 7) == "http://" ||
+          link_content.slice(0, 7) == "https:/") {
+        link.textContent = cl;
+        // In the case where the URL is directly visible, we remove
+        // the hint to avoid repetitive information
+        remove_ui();
+        link.classList.add("sh_fixed_link");
+      }
     });
   }
   return true;

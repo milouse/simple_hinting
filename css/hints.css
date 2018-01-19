@@ -28,3 +28,7 @@
     z-index: 999;
     line-height: 1.5em;
 }
+
+.sh_fixed_link::after {
+    content: '👍'
+}
