@@ -278,8 +278,8 @@ browser.runtime.onMessage.addListener(function(data) {
     ui_visible = true;
     labels[i] = { "rep": d };
     unshorten_link(link, function(long_link) {
-      link.href = long_link;
-      d.textContent = clean_link(long_link);
+      let cl = clean_link(long_link);
+      link.href = d.textContent = cl;
     });
   }
   return true;
