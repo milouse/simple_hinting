@@ -294,6 +294,7 @@ browser.runtime.onMessage.addListener(function(data) {
         remove_ui();
         link.classList.add("sh_fixed_link");
       }
+      link.blur();
     });
   }
   return true;
