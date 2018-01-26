@@ -79,6 +79,22 @@ function unshorten_link (link, success) {
   }
 }
 
+function update_link (link, cl) {
+  link.href = cl;
+  if (link.title != "" &&
+      (link.title.slice(0, 7) == "http://" ||
+       link.title.slice(0, 7) == "https:/")) {
+    link.title = cl;
+  }
+  let link_content = link.textContent.trim();
+  if (link_content.slice(0, 7) == "http://" ||
+      link_content.slice(0, 7) == "https:/") {
+    link.textContent = cl;
+    return true;
+  }
+  return false;
+}
+
 function view_link () {
   var col = browser.i18n.getMessage("columnSeparator");
   for(let id in labels) {
@@ -90,9 +106,13 @@ function view_link () {
       labels[id].rep.textContent = base_text + col +
         browser.i18n.getMessage("parsingPlaceholder");
       unshorten_link(labels[id].a, function(long_link) {
-        labels[id].a = long_link;
-        labels[id].rep.textContent = base_text + col +
-          clean_link(long_link);
+        let cl = clean_link(long_link);
+        if (update_link(labels[id].a, cl)) {
+          labels[id].rep.textContent = base_text;
+          labels[id].rep.classList.remove("sh_hint_view");
+        } else {
+          labels[id].rep.textContent = base_text + col + cl;
+        }
       });
     }
   }
@@ -279,20 +299,12 @@ browser.runtime.onMessage.addListener(function(data) {
     labels[i] = { "rep": d };
     unshorten_link(link, function(long_link) {
       let cl = clean_link(long_link);
-      link.href = d.textContent = cl;
-      if (link.title != "" &&
-          (link.title.slice(0, 7) == "http://" ||
-           link.title.slice(0, 7) == "https:/")) {
-        link.title = cl;
-      }
-      let link_content = link.textContent.trim();
-      if (link_content.slice(0, 7) == "http://" ||
-          link_content.slice(0, 7) == "https:/") {
-        link.textContent = cl;
+      d.textContent = cl;
+      if (update_link(link, cl)) {
+        link.classList.add("sh_fixed_link");
         // In the case where the URL is directly visible, we remove
         // the hint to avoid repetitive information
         remove_ui();
-        link.classList.add("sh_fixed_link");
       }
       link.blur();
     });
