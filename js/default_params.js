@@ -25,6 +25,7 @@ var tiny_domains = [
   "po.st",
   "t.co",
   "tinyurl.com",
+  "u.afp.com",
   "vdn.lv"
 ];
 
