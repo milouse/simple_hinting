@@ -3,7 +3,7 @@ VERSION = $(shell sed -nr "s/^\s+\"version\": \"(.+)\",$$/\1/p" manifest.json)
 
 all: build
 
-build:
+build: clean
 ifeq ($(TARGET), chromium)
 	sed -i 14,19d manifest.json
 endif
@@ -15,3 +15,6 @@ endif
 sign:
 	web-ext sign --api-key=$$AMO_JWT_ISSUER --api-secret=$$AMO_JWT_SECRET	\
 		--ignore-files "Makefile" "web-ext-artifacts*" "**/*.xcf"
+
+clean:
+	rm -f "web-ext-artifacts/simple_hinting-$(VERSION).zip"
