@@ -12,9 +12,5 @@ ifeq ($(TARGET), chromium)
 	git checkout manifest.json
 endif
 
-sign:
-	web-ext sign --api-key=$$AMO_JWT_ISSUER --api-secret=$$AMO_JWT_SECRET	\
-		--ignore-files "Makefile" "web-ext-artifacts*" "**/*.xcf"
-
 clean:
 	rm -f "web-ext-artifacts/simple_hinting-$(VERSION).zip"
