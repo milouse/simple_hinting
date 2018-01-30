@@ -11,6 +11,7 @@ var actionkeys = {
 };
 
 var tiny_domains = [
+  "bddy.me",
   "bit.ly",
   "dlvr.it",
   "ebx.sh",
