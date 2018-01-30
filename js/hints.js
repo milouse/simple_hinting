@@ -279,7 +279,8 @@ browser.storage.local.get(opts).then(function (result) {
   }
 }, onError);
 
-browser.runtime.onMessage.addListener(function(data) {
+browser.runtime.onMessage.addListener(function(data, sender) {
+  if (sender.id != "simple_hinting@umaneti.net") return false;
   if (!data['message']) return false;
   if (data.message != "fix_one" || !data['link_uri']) return false;
   if (data.link_uri == "" || data.link_uri[0] == "#") return false;

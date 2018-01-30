@@ -1,4 +1,5 @@
-function openNewTabOrWindow (request) {
+function openNewTabOrWindow (request, sender) {
+  if (sender.id != "simple_hinting@umaneti.net") return;
   if (!request.url) return;
   if (!request.type) request["type"] = "newtab";
   if (request.type === "newwin")
