@@ -1,8 +1,3 @@
-function onError(error) {
-  document.getElementById("save-status").textContent = `Error while retrieving extension options: ${error}`;
-  document.getElementById("save-status").style.color = "red";
-}
-
 function saveOptions(event) {
   event.preventDefault();
   event.stopPropagation();
@@ -23,7 +18,7 @@ function saveOptions(event) {
       tiny_domains.push(raw_params[i].trim());
     }
   }
-  unshorten_url_field = document.querySelector("input#unshorten-url-field")
+  let unshorten_url_field = document.querySelector("input#unshorten-url-field")
   if (unshorten_url_field && unshorten_url_field.value != "") {
     unshorten_service = unshorten_url_field.value;
   }

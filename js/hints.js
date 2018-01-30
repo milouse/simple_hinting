@@ -125,7 +125,7 @@ function open_link (keyname) {
     action = actionkeys[keyname];
     if (!action) throw "no action found";
   } catch (e) {
-    onError("Failed command: " + e);
+    onError(`Failed command: ${e}`);
   } finally {
     remove_ui();
   }
@@ -230,7 +230,7 @@ function is_command (e) {
   try {
     is_c = Object.keys(actionkeys).indexOf(e.key) !== -1;
   } catch (e) {
-    onError("Failed reading key: " + e);
+    onError(`Failed reading key: ${e}`);
   }
   return is_c;
 }
