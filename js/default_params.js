@@ -69,12 +69,23 @@ function initTinyDomains(unshorten_url, in_options) {
   fetch("https://deparis.io/unshorten.php?json").then(function(response) {
     return response.json();
   }).then(function(upstream_tiny_domains) {
-    if (!in_options) {
-      tiny_domains = upstream_tiny_domains;
-      return;
+    tiny_domains = upstream_tiny_domains;
+    browser.storage.local.set({
+      "tiny_domains_list": upstream_tiny_domains,
+    }).then(function () {
+      if (in_options) {
+        let successf = document.getElementById("save-status");
+        successf.textContent = browser.i18n.getMessage("tinyDomainsFetched");
+        successf.style.color = "green";
+        setTimeout(function() {
+          document.getElementById("save-status").textContent = "";
+        }, 3000);
+      }
+    }, onError);
+    if (in_options) {
+      let tdf = document.querySelector("textarea#tiny-domains-field");
+      tdf.value = tiny_domains.join(", ");
+      tdf.disabled = true;
     }
-    let tdf = document.querySelector("textarea#tiny-domains-field");
-    tdf.value = upstream_tiny_domains.join(", ");
-    tdf.disabled = true;
   });
 }
