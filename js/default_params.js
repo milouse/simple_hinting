@@ -10,27 +10,7 @@ var actionkeys = {
   "p": "incognito"
 };
 
-var tiny_domains = [
-  "bddy.me",
-  "bit.ly",
-  "dlvr.it",
-  "ebx.sh",
-  "fb.me",
-  "frama.link",
-  "goo.gl",
-  "is.gd",
-  "kck.st",
-  "lemde.fr",
-  "mzl.la",
-  "ow.ly",
-  "po.st",
-  "t.co",
-  "tinyurl.com",
-  "u.afp.com",
-  "vdn.lv"
-];
-
-var unshorten_service = "https://deparis.io/unshorten.php?url="
+var default_unshorten_service = "https://deparis.io/unshorten.php?url="
 
 var unwanted_params = [
   "utm_source",
@@ -74,4 +54,27 @@ function onError(error) {
   } else {
     console.error(message);
   }
+}
+
+var tiny_domains = [];
+function initTinyDomains(unshorten_url, in_options) {
+  if (unshorten_url != default_unshorten_service) {
+    if (in_options) {
+      let tdf = document.querySelector("textarea#tiny-domains-field");
+      tdf.value = "";
+      tdf.disabled = false;
+    }
+    return;
+  }
+  fetch("https://deparis.io/unshorten.php?json").then(function(response) {
+    return response.json();
+  }).then(function(upstream_tiny_domains) {
+    if (!in_options) {
+      tiny_domains = upstream_tiny_domains;
+      return;
+    }
+    let tdf = document.querySelector("textarea#tiny-domains-field");
+    tdf.value = upstream_tiny_domains.join(", ");
+    tdf.disabled = true;
+  });
 }

@@ -19,8 +19,14 @@ function saveOptions(event) {
     }
   }
   let unshorten_url_field = document.querySelector("input#unshorten-url-field")
+  let unshorten_service = default_unshorten_service;
   if (unshorten_url_field && unshorten_url_field.value != "") {
     unshorten_service = unshorten_url_field.value;
+  }
+  if (unshorten_service == default_unshorten_service) {
+    document.querySelector("textarea#tiny-domains-field").disabled = true;
+  } else {
+    document.querySelector("textarea#tiny-domains-field").disabled = false;
   }
   browser.storage.local.set({
     "unwanted_params": unwanted_params,
@@ -36,8 +42,8 @@ document.getElementById("simple-hinting-prefs").addEventListener("submit", saveO
 
 document.getElementById("reset-button").addEventListener("click", function(event) {
   document.querySelector("textarea#unwanted-params-field").value = unwanted_params.join(", ");
-  document.querySelector("textarea#tiny-domains-field").value = tiny_domains.join(", ");
-  document.querySelector("input#unshorten-url-field").value = unshorten_service;
+  document.querySelector("input#unshorten-url-field").value = default_unshorten_service;
+  initTinyDomains(default_unshorten_service, true);
   saveOptions(event);
 });
 
@@ -59,16 +65,22 @@ function restoreOptions() {
       my_unwanted_params = result.unwanted_params;
     }
     document.querySelector("textarea#unwanted-params-field").value = my_unwanted_params.join(", ");
-    let my_tiny_domains = tiny_domains;
-    if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
-      my_tiny_domains = result.tiny_domains_list;
-    }
-    document.querySelector("textarea#tiny-domains-field").value = my_tiny_domains.join(", ");
-    let my_unshorten_url = unshorten_service;
+
+    let my_unshorten_url = default_unshorten_service;
     if (result.unshorten_url && result.unshorten_url != "") {
       my_unshorten_url = result.unshorten_url
     }
     document.querySelector("input#unshorten-url-field").value = my_unshorten_url;
+
+    if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
+      let my_tiny_domains = result.tiny_domains_list;
+      document.querySelector("textarea#tiny-domains-field").value = my_tiny_domains.join(", ");
+      if (my_unshorten_url == default_unshorten_service) {
+        document.querySelector("textarea#tiny-domains-field").disabled = true;
+      }
+    } else {
+      initTinyDomains(my_unshorten_url, true);
+    }
   }, onError);
 }
 document.addEventListener("DOMContentLoaded", restoreOptions);
