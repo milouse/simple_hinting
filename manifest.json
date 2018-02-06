@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Simple Hinting",
-  "version": "0.3.0b2",
+  "version": "0.3.0",
   "default_locale": "en",
   "description": "__MSG_extensionDesc__",
   "icons": {
