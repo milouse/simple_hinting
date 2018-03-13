@@ -33,9 +33,9 @@ attributes from the URL you are trying to go to. The list of the banned
 attributes is customizable in the addon options.
 
 In order to remove attributes from short URL (e.g. on Twitter), this
-addon call an [external web service](https://deparis.io/unshorten.php),
+addon call an [external web service](https://unshorten.deparis.io/),
 which is responsible for expanding this kind of links. The source code
-of this service is available [as a gist](https://gist.github.com/milouse/11104731f2184c4cf84376e9b5fecd85).
+of this service is available [as a git repository](https://git.deparis.io/unshorten/).
 The location of this service is customizable in the addon options, thus
 you are free to host your own, or to use another service
 (e.g. unshorten.me).

@@ -10,7 +10,7 @@ var actionkeys = {
   "p": "incognito"
 };
 
-var default_unshorten_service = "https://deparis.io/unshorten.php?url="
+var default_unshorten_service = "https://unshorten.deparis.io/c?url="
 
 var unwanted_params = [
   "utm_source",
@@ -66,7 +66,7 @@ function initTinyDomains(unshorten_url, in_options) {
     }
     return;
   }
-  fetch("https://deparis.io/unshorten.php?json").then(function(response) {
+  fetch("https://unshorten.deparis.io/domains").then(function(response) {
     return response.json();
   }).then(function(upstream_tiny_domains) {
     tiny_domains = upstream_tiny_domains;
