@@ -273,6 +273,8 @@ browser.storage.local.get(opts).then(function (result) {
   }
   if (result.unshorten_url && result.unshorten_url != "") {
     unshorten_service = result.unshorten_url;
+  } else {
+    unshorten_service = default_unshorten_service;
   }
   if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
     tiny_domains = result.tiny_domains_list;
