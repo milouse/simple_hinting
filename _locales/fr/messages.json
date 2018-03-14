@@ -38,9 +38,5 @@
   "resetPrefButton": {
     "message": "Revenir aux paramètres par défaut",
     "description": "Reset button of the preferences page"
-  },
-  "tinyDomainsFetched": {
-    "message": "La liste des domaines courts a été récupérée avec succès",
-    "description": "Message printed out on options page when the tiny domains list is fetched"
   }
 }

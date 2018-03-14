@@ -20,7 +20,7 @@ function highlight () {
     } else {
       labels[id].rep.classList.remove("sh_hint_hl");
     }
-    if (id != 1)
+    if (id !== 1)
       labels[id].rep.textContent = id;
   }
   return at_least_one_match;
@@ -47,10 +47,10 @@ function clean_attributes (url_part, symbol) {
 }
 
 function clean_link (link) {
-  if (link.search != "") {
+  if (link.search !== "") {
     link.search = clean_attributes(link.search, "?");
   }
-  if (link.hash != "") {
+  if (link.hash !== "") {
     link.hash = clean_attributes(link.hash, "#");
   }
   return link.toString();
@@ -81,14 +81,14 @@ function unshorten_link (link, success) {
 
 function update_link (link, cl) {
   link.href = cl;
-  if (link.title != "" &&
-      (link.title.slice(0, 7) == "http://" ||
-       link.title.slice(0, 7) == "https:/")) {
+  if (link.title !== "" &&
+      (link.title.slice(0, 7) === "http://" ||
+       link.title.slice(0, 7) === "https:/")) {
     link.title = cl;
   }
   let link_content = link.textContent.trim();
-  if (link_content.slice(0, 7) == "http://" ||
-      link_content.slice(0, 7) == "https:/") {
+  if (link_content.slice(0, 7) === "http://" ||
+      link_content.slice(0, 7) === "https:/") {
     link.textContent = cl;
     return true;
   }
@@ -98,8 +98,8 @@ function update_link (link, cl) {
 function view_link () {
   var col = browser.i18n.getMessage("columnSeparator");
   for(let id in labels) {
-    if (id == 1) continue;
-    if (labels[id].a.tagName != "A") continue;
+    if (id === 1) continue;
+    if (labels[id].a.tagName !== "A") continue;
     if (input && id.match("^" + input) !== null) {
       var base_text = id;
       labels[id].rep.classList.add("sh_hint_view");
@@ -129,7 +129,7 @@ function open_link (keyname) {
   } finally {
     remove_ui();
   }
-  if (a.tagName != "A") {
+  if (a.tagName !== "A") {
     a.focus();
     return;
   }
@@ -168,14 +168,14 @@ function create_ui () {
 
   for (let i = 0; i < ankers.length; i++) {
     let a = ankers[i];
-    if (a.tagName == "A" && !a.href) continue;
+    if (a.tagName === "A" && !a.href) continue;
     // Are you visible?
-    if (a.hidden || a.style.display == "none" ||
-        a.style.visibility == "hidden") {
+    if (a.hidden || a.style.display === "none" ||
+        a.style.visibility === "hidden") {
       continue;
     }
     astyles = window.getComputedStyle(a);
-    if (astyles.display == "none" || astyles.visibility == "hidden") {
+    if (astyles.display === "none" || astyles.visibility === "hidden") {
       continue;
     }
 
@@ -187,7 +187,7 @@ function create_ui () {
 
     labels[b] = { "a": a, "rep": d };
 
-    if (i == 0) {
+    if (i === 0) {
       d.textContent += browser.i18n.getMessage("columnSeparator") +
         clean_link(a);
       d.classList.add("sh_hint_first");
@@ -248,7 +248,7 @@ window.addEventListener("keyup", function(e) {
   if(is_escape(e)) {
     remove_ui();
 
-  } else if (e.key == "Backspace") {
+  } else if (e.key === "Backspace") {
     input = input.slice(0, -1);
     if (!highlight()) remove_ui();
 
@@ -268,26 +268,31 @@ window.addEventListener("keyup", function(e) {
 
 let opts = ["unwanted_params", "tiny_domains_list", "unshorten_url"];
 browser.storage.local.get(opts).then(function (result) {
+  if (result.unshorten_url && result.unshorten_url !== "") {
+    unshorten_service = result.unshorten_url;
+  }
+  let must_init = true;
+  if (unshorten_service !== default_unshorten_service) {
+    must_init = false;
+  }
   if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
     unwanted_params = result.unwanted_params;
-  }
-  if (result.unshorten_url && result.unshorten_url != "") {
-    unshorten_service = result.unshorten_url;
-  } else {
-    unshorten_service = default_unshorten_service;
+  } else if (must_init) {
+    initUnwantedParams();
   }
   if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
     tiny_domains = result.tiny_domains_list;
-  } else {
-    initTinyDomains(unshorten_service, false);
+  } else if (must_init) {
+    initTinyDomains();
   }
 }, onError);
 
+
 browser.runtime.onMessage.addListener(function(data, sender) {
-  if (sender.id != "simple_hinting@umaneti.net") return false;
-  if (!data['message']) return false;
-  if (data.message != "fix_one" || !data['link_uri']) return false;
-  if (data.link_uri == "" || data.link_uri[0] == "#") return false;
+  if (sender.id !== "simple_hinting@umaneti.net") return false;
+  if (!data["message"]) return false;
+  if (data.message !== "fix_one" || !data["link_uri"]) return false;
+  if (data.link_uri === "" || data.link_uri[0] === "#") return false;
   var all_links = document.querySelectorAll(
     "a[href='" + data.link_uri + "']");
   for (let i = 0; i < all_links.length; i++) {
