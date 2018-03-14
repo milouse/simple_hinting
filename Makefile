@@ -2,7 +2,7 @@ TARGET     = firefox
 VERSION   != sed -nr "s/^\s+\"version\": \"(.+)\",$$/\1/p" manifest.json
 BUILD_FILE = web-ext-artifacts/simple_hinting-$(VERSION).zip
 
-.PHONY: build clean deps
+.PHONY: beta build clean deps
 
 all: build
 
@@ -16,6 +16,11 @@ ifeq ($(TARGET), chromium)
 	sed -i 14,19d manifest.json
 endif
 	web-ext build --ignore-files "Makefile" "web-ext-artifacts*" "**/*.xcf"
+
+beta: clean
+	web-ext sign --api-key=$$AMO_JWT_ISSUER --api-secret=$$AMO_JWT_SECRET	\
+		--ignore-files "Makefile" "web-ext-artifacts*" "**/*.xcf" || true
+	gio open "https://addons.mozilla.org/en-US/developers/addon/simple-hinting/versions"
 
 clean:
 	rm -f $(BUILD_FILE)
