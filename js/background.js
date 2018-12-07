@@ -16,10 +16,21 @@ browser.contextMenus.create({
   title: browser.i18n.getMessage("fixThisLink"),
   contexts: ["link"]
 });
+browser.contextMenus.create({
+  id: "sh-fix-all",
+  title: browser.i18n.getMessage("fixAllLinks"),
+  contexts: ["page", "image"]
+});
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId != "sh-fix-link-at-point") return;
-  browser.tabs.sendMessage(tab.id, {
-    message: "fix_one",
-    link_uri: info.linkUrl
-  });
+  if (info.menuItemId == "sh-fix-link-at-point") {
+    browser.tabs.sendMessage(tab.id, {
+      message: "fix_one",
+      link_uri: info.linkUrl
+    });
+  } else if (info.menuItemId == "sh-fix-all") {
+    browser.tabs.sendMessage(tab.id, {
+      message: "fix_all",
+      link_uri: info.linkUrl
+    });
+  }
 });

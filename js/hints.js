@@ -4,29 +4,32 @@
  * http://surf.suckless.org/files/easy_links
  */
 
+
 // Globals
-var nr_base = 10;   // >=10 : normal integer,
-var labels = new Object();
-var ui_visible = false;
-var input = "";
+var SimpleHinting = function () {
+  this.nr_base = 10;   // >=10 : normal integer,
+  this.labels = new Object();
+  this.ui_visible = false;
+  this.input = "";
+};
 
 // functions
-function highlight () {
+SimpleHinting.prototype.highlight = function () {
   var at_least_one_match = false;
-  for(let id in labels) {
-    if (input && id.match("^" + input) !== null) {
+  for(let id in this.labels) {
+    if (this.input && id.match("^" + this.input) !== null) {
       at_least_one_match = true;
-      labels[id].rep.classList.add("sh_hint_hl");
+      this.labels[id].rep.classList.add("sh_hint_hl");
     } else {
-      labels[id].rep.classList.remove("sh_hint_hl");
+      this.labels[id].rep.classList.remove("sh_hint_hl");
     }
     if (id !== 1)
-      labels[id].rep.textContent = id;
+      this.labels[id].rep.textContent = id;
   }
   return at_least_one_match;
 }
 
-function clean_attributes (url_part, symbol) {
+SimpleHinting.prototype.clean_attributes = function (url_part, symbol) {
   // url_part may be 'search' or 'hash'
   try {
     var query = url_part.substr(1).split("&");
@@ -46,31 +49,32 @@ function clean_attributes (url_part, symbol) {
   return "";
 }
 
-function clean_link (link) {
+SimpleHinting.prototype.clean_link = function (link) {
   if (link.search !== "") {
-    link.search = clean_attributes(link.search, "?");
+    link.search = this.clean_attributes(link.search, "?");
   }
   if (link.hash !== "") {
-    link.hash = clean_attributes(link.hash, "#");
+    link.hash = this.clean_attributes(link.hash, "#");
   }
   return link.toString();
 }
 
-function unshorten_link (link, success) {
+SimpleHinting.prototype.unshorten_link = function (link, success) {
   if (link.hasAttribute("data-expanded-url")){
     // shortcut for twitter timeline links
     link.href = link.getAttribute("data-expanded-url");
   }
   if (tiny_domains.indexOf(link.hostname) === -1) {
-    return success(link);
+    return success.call(this, link);
   }
   try {
     let req_uri = unshorten_service + link.href;
     const xhr = new XMLHttpRequest();
     xhr.open("GET", req_uri);
+    var ext_this = this;
     xhr.onload = function () {
       link.href = xhr.responseText.trim();
-      success(link);
+      success.call(ext_this, link);
     };
     xhr.onerror = function () { throw xhr.statusText; };
     xhr.send();
@@ -79,7 +83,7 @@ function unshorten_link (link, success) {
   }
 }
 
-function update_link (link, cl) {
+SimpleHinting.prototype.update_link = function (link, cl) {
   link.href = cl;
   if (link.title !== "" &&
       (link.title.slice(0, 7) === "http://" ||
@@ -92,49 +96,54 @@ function update_link (link, cl) {
     link.textContent = cl;
     return true;
   }
+  // Twitter hack
+  if (tiny_domains.indexOf(link_content.split("/",2)[0]) !== -1) {
+    link.textContent = cl;
+    return true;
+  }
   return false;
 }
 
-function view_link () {
+SimpleHinting.prototype.view_link = function () {
   var col = browser.i18n.getMessage("columnSeparator");
-  for(let id in labels) {
+  for(let id in this.labels) {
     if (id === 1) continue;
-    if (labels[id].a.tagName !== "A") continue;
-    if (input && id.match("^" + input) !== null) {
+    if (this.labels[id].a.tagName !== "A") continue;
+    if (this.input && id.match("^" + this.input) !== null) {
       var base_text = id;
-      labels[id].rep.classList.add("sh_hint_view");
-      labels[id].rep.textContent = base_text + col +
+      this.labels[id].rep.classList.add("sh_hint_view");
+      this.labels[id].rep.textContent = base_text + col +
         browser.i18n.getMessage("parsingPlaceholder");
-      unshorten_link(labels[id].a, function(long_link) {
-        let cl = clean_link(long_link);
-        if (update_link(labels[id].a, cl)) {
-          labels[id].rep.textContent = base_text;
-          labels[id].rep.classList.remove("sh_hint_view");
+      this.unshorten_link(this.labels[id].a, function(long_link) {
+        let cl = this.clean_link(long_link);
+        if (this.update_link(this.labels[id].a, cl)) {
+          this.labels[id].rep.textContent = base_text;
+          this.labels[id].rep.classList.remove("sh_hint_view");
         } else {
-          labels[id].rep.textContent = base_text + col + cl;
+          this.labels[id].rep.textContent = base_text + col + cl;
         }
       });
     }
   }
 }
 
-function open_link (keyname) {
+SimpleHinting.prototype.open_link = function (keyname) {
   try {
-    var a = labels[input].a;
+    var a = this.labels[this.input].a;
     if (!a) throw "no link found";
     action = actionkeys[keyname];
     if (!action) throw "no action found";
   } catch (e) {
     onError(`Failed command: ${e}`);
   } finally {
-    remove_ui();
+    this.remove_ui();
   }
   if (a.tagName !== "A") {
     a.focus();
     return;
   }
-  unshorten_link(a, function(la) {
-    let proper_link = clean_link(la);
+  this.unshorten_link(a, function(la) {
+    let proper_link = this.clean_link(la);
     if(action === "follow")
       window.location.href = proper_link;
     else
@@ -146,18 +155,18 @@ function open_link (keyname) {
 }
 
 // Remove labels from the DOM
-function remove_ui () {
-  for(let id in labels) {
-    let pe = labels[id].rep.parentElement;
-    if (pe) pe.removeChild(labels[id].rep);
+SimpleHinting.prototype.remove_ui = function () {
+  for(let id in this.labels) {
+    let pe = this.labels[id].rep.parentElement;
+    if (pe) pe.removeChild(this.labels[id].rep);
   }
-  labels = new Object();
-  ui_visible = false;
-  input = "";
+  this.labels = new Object();
+  this.ui_visible = false;
+  this.input = "";
 }
 
 // Create labels when needed
-function create_ui () {
+SimpleHinting.prototype.create_ui = function () {
   let selectors = "a, input[type=text], input[type=search], textarea";
   var ankers = Array.from(document.querySelectorAll(selectors));
 
@@ -179,17 +188,17 @@ function create_ui () {
       continue;
     }
 
-    let b = base(i+1, nr_base);
+    let b = this.base(i+1, this.nr_base);
 
     var d = document.createElement("span");
     d.classList.add("sh_hint");
     d.textContent = b;
 
-    labels[b] = { "a": a, "rep": d };
+    this.labels[b] = { "a": a, "rep": d };
 
     if (i === 0) {
       d.textContent += browser.i18n.getMessage("columnSeparator") +
-        clean_link(a);
+        this.clean_link(a);
       d.classList.add("sh_hint_first");
       document.body.appendChild(d);
     } else {
@@ -200,10 +209,10 @@ function create_ui () {
       }
     }
   }
-  ui_visible = true;
+  this.ui_visible = true;
 }
 
-function base (n, b) {
+SimpleHinting.prototype.base = function (n, b) {
   if (b >= 10) return n.toString();
   let res = new Array();
   while (n) {
@@ -212,6 +221,36 @@ function base (n, b) {
   }
   return res.reverse().join("");
 }
+
+SimpleHinting.prototype.fix_one_link = function (link_uri) {
+  var all_links = document.querySelectorAll(
+    "a[href='" + link_uri + "']");
+  for (let i = 0; i < all_links.length; i++) {
+    let link = all_links[i];
+    let d = document.createElement("span");
+    d.className = "sh_hint sh_hint_view";
+    if (link.nextSibling) {
+      link.parentNode.insertBefore(d, link.nextSibling);
+    } else {
+      link.parentNode.appendChild(d);
+    }
+    d.textContent = browser.i18n.getMessage("parsingPlaceholder");
+    this.ui_visible = true;
+    this.labels[i] = { "rep": d };
+    this.unshorten_link(link, function(long_link) {
+      let cl = this.clean_link(long_link);
+      d.textContent = cl;
+      if (this.update_link(link, cl)) {
+        link.classList.add("sh_fixed_link");
+        // In the case where the URL is directly visible, we remove
+        // the hint to avoid repetitive information
+        this.remove_ui();
+      }
+      link.blur();
+    });
+  }
+}
+
 
 function is_lshift (e) {
   return (e.key === "Shift" || e.key === "GroupPrevious" || e.shiftKey);
@@ -235,32 +274,40 @@ function is_command (e) {
   return is_c;
 }
 
+
+var main_simple_hinting = new SimpleHinting();
+
 // set key handler
 window.addEventListener("keyup", function(e) {
   if (is_lshift(e) && is_alt(e)) {
-    if (ui_visible) remove_ui();
-    else create_ui();
-    return true
-  } else if (!ui_visible) {
-    return false
+    if (main_simple_hinting.ui_visible) {
+      main_simple_hinting.remove_ui();
+    } else {
+      main_simple_hinting.create_ui();
+    }
+    return true;
+  } else if (!main_simple_hinting.ui_visible) {
+    return false;
   }
 
   if(is_escape(e)) {
-    remove_ui();
+    main_simple_hinting.remove_ui();
 
   } else if (e.key === "Backspace") {
-    input = input.slice(0, -1);
-    if (!highlight()) remove_ui();
+    main_simple_hinting.input = main_simple_hinting.input.slice(0, -1);
+    if (!main_simple_hinting.highlight())
+      main_simple_hinting.remove_ui();
 
   } else if (e.key === viewkey) {
-    view_link(e.key);
+    main_simple_hinting.view_link(e.key);
 
   } else if (is_command(e)) {
-    open_link(e.key);
+    main_simple_hinting.open_link(e.key);
 
   } else if (Number.isInteger(Number.parseInt(e.key))) {
-    input += e.key;
-    if (!highlight()) remove_ui();
+    main_simple_hinting.input += e.key;
+    if (!main_simple_hinting.highlight())
+      main_simple_hinting.remove_ui();
   }
   return true
 }, false);
@@ -291,33 +338,27 @@ browser.storage.local.get(opts).then(function (result) {
 browser.runtime.onMessage.addListener(function(data, sender) {
   if (sender.id !== "simple_hinting@umaneti.net") return false;
   if (!data["message"]) return false;
-  if (data.message !== "fix_one" || !data["link_uri"]) return false;
-  if (data.link_uri === "" || data.link_uri[0] === "#") return false;
-  var all_links = document.querySelectorAll(
-    "a[href='" + data.link_uri + "']");
-  for (let i = 0; i < all_links.length; i++) {
-    let link = all_links[i];
-    let d = document.createElement("span");
-    d.className = "sh_hint sh_hint_view";
-    if (link.nextSibling) {
-      link.parentNode.insertBefore(d, link.nextSibling);
-    } else {
-      link.parentNode.appendChild(d);
+  if (data.message === "fix_one") {
+    if (!data["link_uri"]) return false;
+    let link_uri = data.link_uri.trim();
+    if (link_uri === "" || link_uri[0] === "#") return false;
+    let sh = new SimpleHinting();
+    sh.fix_one_link(link_uri);
+  } else if (data.message === "fix_all") {
+    var all_page_links = document.querySelectorAll("A");
+    var already_done = [];
+    var totally_done = 0;
+    for (let i = 0; i < all_page_links.length; i++) {
+      let link_uri = all_page_links[i].href.trim();
+      if (link_uri === "" || link_uri[0] == "#") continue;
+      if (already_done.indexOf(link_uri) !== -1) continue;
+      already_done.push(link_uri);
+      let sh = new SimpleHinting();
+      sh.fix_one_link(link_uri);
+      // In any case, remove ui to avoid spam
+      sh.remove_ui();
+      totally_done += 1;
     }
-    d.textContent = browser.i18n.getMessage("parsingPlaceholder");
-    ui_visible = true;
-    labels[i] = { "rep": d };
-    unshorten_link(link, function(long_link) {
-      let cl = clean_link(long_link);
-      d.textContent = cl;
-      if (update_link(link, cl)) {
-        link.classList.add("sh_fixed_link");
-        // In the case where the URL is directly visible, we remove
-        // the hint to avoid repetitive information
-        remove_ui();
-      }
-      link.blur();
-    });
   }
   return true;
 });

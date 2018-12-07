@@ -7,6 +7,10 @@
     "message": "Fix this link",
     "description": "Context menu item label"
   },
+  "fixAllLinks": {
+    "message": "Fix all links",
+    "description": "Context menu item label"
+  },
   "parsingPlaceholder": {
     "message": "parsing URL…",
     "description": "Brief message displayed in a link label while expanding / cleaning it"

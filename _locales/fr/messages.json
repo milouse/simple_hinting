@@ -7,6 +7,10 @@
     "message": "Nettoyer ce lien",
     "description": "Context menu item label"
   },
+  "fixAllLinks": {
+    "message": "Nettoyer tous les liens",
+    "description": "Context menu item label"
+  },
   "parsingPlaceholder": {
     "message": "nettoyage de l'URL…",
     "description": "Brief message displayed in a link label while expanding / cleaning it"
