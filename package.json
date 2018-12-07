@@ -1,0 +1,13 @@
+{
+  "name": "simple_hinting",
+  "version": "0.5.0",
+  "author": "Étienne Deparis",
+  "scripts": {
+    "preinstall": "make -B js/browser-polyfill.min.js",
+    "dev": "web-ext run",
+    "chromebuild": "TARGET=chromium make build"
+  },
+  "devDependencies": {
+    "web-ext": "^2.9"
+  }
+}

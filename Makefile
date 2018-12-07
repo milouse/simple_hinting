@@ -1,6 +1,8 @@
 TARGET     = firefox
 VERSION   != sed -nr "s/^\s+\"version\": \"(.+)\",$$/\1/p" manifest.json
 BUILD_FILE = web-ext-artifacts/simple_hinting-$(VERSION).zip
+WEBEXT = ./node_modules/web-ext/bin/web-ext \
+	--ignore-files "Makefile" "package*.json" "web-ext-artifacts*" "**/*.xcf"
 
 .PHONY: beta build clean
 
@@ -10,18 +12,21 @@ build: js/browser-polyfill.min.js
 ifeq ($(TARGET), chromium)
 	sed -i 14,19d manifest.json
 endif
-	web-ext build --ignore-files "Makefile" "web-ext-artifacts*" "**/*.xcf"
+	$(WEBEXT) build
 ifeq ($(TARGET), chromium)
 	git checkout manifest.json
 endif
 
 beta: js/browser-polyfill.min.js
-	web-ext sign --api-key=$$AMO_JWT_ISSUER --api-secret=$$AMO_JWT_SECRET	\
-		--ignore-files "Makefile" "web-ext-artifacts*" "**/*.xcf" || true
+	$(WEBEXT) --api-key=$$AMO_JWT_ISSUER --api-secret=$$AMO_JWT_SECRET sign || true
 	gio open "https://addons.mozilla.org/en-US/developers/addon/simple-hinting/versions"
 
 clean:
 	rm -rf webextension-polyfill
+
+distclean:
+	rm -rf node_modules
+	rm -f package-lock.json
 
 js/browser-polyfill.min.js:
 	git clone "https://github.com/mozilla/webextension-polyfill.git"
