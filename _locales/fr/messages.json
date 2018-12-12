@@ -1,46 +1,46 @@
 {
   "extensionDesc": {
     "message": "Permet la navigation au clavier via des étiquettes ajoutés aux liens.",
-    "description": "Description of the extension"
+    "description": "Description de l'extension"
   },
   "fixThisLink": {
     "message": "Nettoyer ce lien",
-    "description": "Context menu item label"
+    "description": "Titre d'un élément du menu contextuel"
   },
   "fixAllLinks": {
     "message": "Nettoyer tous les liens",
-    "description": "Context menu item label"
+    "description": "Titre d'un élément du menu contextuel"
   },
   "parsingPlaceholder": {
     "message": "nettoyage de l'URL…",
-    "description": "Brief message displayed in a link label while expanding / cleaning it"
+    "description": "Message bref affiché lorsqu'un lien est en train d'être étendu ou nettoyé"
   },
   "columnSeparator": {
     "message": " : ",
-    "description": "How a column must be placed between two sentences"
+    "description": "Espaces à utiliser de part et d'autre des deux points"
   },
   "optionsSaved": {
     "message": "Préférences enregistrées !",
-    "description": "Message displayed when preferences are successfully saved"
+    "description": "Message affiché lorsque les préférences sont enregistrées avec succès"
   },
   "unwantedParams": {
     "message": "Paramètres non désirés :",
-    "description": "Unwanted params field label on the preferences page"
+    "description": "Description du champs des attributs non désirés sur la page de préférence"
   },
   "expandableDomains": {
     "message": "Domaines des liens courts à reconnaître :",
-    "description": "Expandable domains field label on the preferences page"
+    "description": "Description du champs des domaines à étendre sur la page de préférence"
   },
   "unshortenService": {
     "message": "URL de l'API de conversion des liens courts :",
-    "description": "Unshorten service field label on the preferences page"
+    "description": "Description du champs de l'URL de l'API à utiliser pour étendre les liens sur la page de préférence"
   },
   "savePrefButton": {
     "message": "Enregistrer les préférences",
-    "description": "Submit button of the preferences page"
+    "description": "Texte sur le bouton de soumission sur la page des préférences"
   },
   "resetPrefButton": {
     "message": "Revenir aux paramètres par défaut",
-    "description": "Reset button of the preferences page"
+    "description": "Texte sur le bouton de réinitialisation des préférences"
   }
 }
