@@ -4,7 +4,7 @@
   "author": "Étienne Deparis",
   "scripts": {
     "preinstall": "make -B js/browser-polyfill.min.js",
-    "dev": "web-ext run --ignore-files Makefile webextension-polyfill \"package*.json\" \"**/*.xcf\"",
+    "dev": "web-ext run --bc --ignore-files Makefile webextension-polyfill \"package*.json\" \"**/*.xcf\"",
     "lint": "web-ext lint --ignore-files Makefile webextension-polyfill \"package*.json\" \"**/*.xcf\"",
     "chromebuild": "TARGET=chromium make build"
   },
