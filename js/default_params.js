@@ -7,7 +7,8 @@ var actionkeys = {
   "w": "newwin",
   "t": "newtab",
   "i": "incognito",
-  "p": "incognito"
+  "p": "incognito",
+  "a": "cleanall"
 };
 
 var default_unshorten_service = "https://unshorten.deparis.io/c?url="

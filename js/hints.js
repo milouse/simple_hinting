@@ -167,6 +167,8 @@ SimpleHinting.prototype.remove_ui = function () {
 
 // Create labels when needed
 SimpleHinting.prototype.create_ui = function () {
+  this.labels = new Object();
+  this.input = "";
   let selectors = "a, input[type=text], input[type=search], textarea";
   var ankers = Array.from(document.querySelectorAll(selectors));
 
@@ -274,6 +276,23 @@ function is_command (e) {
   return is_c;
 }
 
+function fix_all_links () {
+  var all_page_links = document.querySelectorAll("A");
+  var already_done = [];
+  var totally_done = 0;
+  for (let i = 0; i < all_page_links.length; i++) {
+    let link_uri = all_page_links[i].href.trim();
+    if (link_uri === "" || link_uri[0] == "#") continue;
+    if (already_done.indexOf(link_uri) !== -1) continue;
+    already_done.push(link_uri);
+    let sh = new SimpleHinting();
+    sh.fix_one_link(link_uri);
+    // In any case, remove ui to avoid spam
+    sh.remove_ui();
+    totally_done += 1;
+  }
+}
+
 
 var main_simple_hinting = new SimpleHinting();
 
@@ -302,7 +321,13 @@ window.addEventListener("keyup", function(e) {
     main_simple_hinting.view_link(e.key);
 
   } else if (is_command(e)) {
-    main_simple_hinting.open_link(e.key);
+    if (actionkeys[e.key] === "cleanall") {
+      main_simple_hinting.remove_ui();
+      fix_all_links();
+
+    } else {
+      main_simple_hinting.open_link(e.key);
+    }
 
   } else if (Number.isInteger(Number.parseInt(e.key))) {
     main_simple_hinting.input += e.key;
@@ -345,20 +370,7 @@ browser.runtime.onMessage.addListener(function(data, sender) {
     let sh = new SimpleHinting();
     sh.fix_one_link(link_uri);
   } else if (data.message === "fix_all") {
-    var all_page_links = document.querySelectorAll("A");
-    var already_done = [];
-    var totally_done = 0;
-    for (let i = 0; i < all_page_links.length; i++) {
-      let link_uri = all_page_links[i].href.trim();
-      if (link_uri === "" || link_uri[0] == "#") continue;
-      if (already_done.indexOf(link_uri) !== -1) continue;
-      already_done.push(link_uri);
-      let sh = new SimpleHinting();
-      sh.fix_one_link(link_uri);
-      // In any case, remove ui to avoid spam
-      sh.remove_ui();
-      totally_done += 1;
-    }
+    fix_all_links();
   }
   return true;
 });
