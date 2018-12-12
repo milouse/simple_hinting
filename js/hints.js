@@ -148,7 +148,7 @@ SimpleHinting.prototype.open_link = function (keyname) {
       window.location.href = proper_link;
     else
       browser.runtime.sendMessage({
-        "url": proper_link,
+        "url": proper_link.toString(),
         "type": action
       });
   });

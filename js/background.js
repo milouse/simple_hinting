@@ -2,12 +2,13 @@ function openNewTabOrWindow (request, sender) {
   if (sender.id != "simple_hinting@umaneti.net") return;
   if (!request.url) return;
   if (!request.type) request["type"] = "newtab";
-  if (request.type === "newwin")
+  if (request.type === "newwin") {
     browser.windows.create({ "url": request.url });
-  else if (request.type === "incognito")
+  } else if (request.type === "incognito") {
     browser.windows.create({ "url": request.url, "incognito": true });
-  else
+  } else {
     browser.tabs.create({ "url": request.url });
+  }
 }
 browser.runtime.onMessage.addListener(openNewTabOrWindow);
 
@@ -28,9 +29,6 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       link_uri: info.linkUrl
     });
   } else if (info.menuItemId == "sh-fix-all") {
-    browser.tabs.sendMessage(tab.id, {
-      message: "fix_all",
-      link_uri: info.linkUrl
-    });
+    browser.tabs.sendMessage(tab.id, { message: "fix_all" });
   }
 });
