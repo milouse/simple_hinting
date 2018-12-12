@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Simple Hinting",
+  "name": "__MSG_extensionTitle__",
   "version": "0.5.0a2",
   "default_locale": "en",
   "description": "__MSG_extensionDesc__",

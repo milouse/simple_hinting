@@ -1,4 +1,8 @@
 {
+  "extensionTitle": {
+    "message": "Navigation simple au clavier et nettoyage",
+    "description": "Titre de l'extension"
+  },
   "extensionDesc": {
     "message": "Permet la navigation au clavier via des étiquettes ajoutés aux liens.",
     "description": "Description de l'extension"
