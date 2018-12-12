@@ -2,3 +2,4 @@ web-ext-artifacts
 webextension-polyfill
 node_modules
 package-lock.json
+.web-extension-id
