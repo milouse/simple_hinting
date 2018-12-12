@@ -1,10 +1,10 @@
 {
   "extensionTitle": {
-    "message": "Navigation simple au clavier et nettoyage",
+    "message": "Accès et nettoyage facile des liens au clavier",
     "description": "Titre de l'extension"
   },
   "extensionDesc": {
-    "message": "Permet la navigation au clavier via des étiquettes ajoutés aux liens.",
+    "message": "Facilite la navigation au clavier via des étiquettes ajoutés aux liens, tout en protégeant un peu mieux votre vie privée.",
     "description": "Description de l'extension"
   },
   "fixThisLink": {
