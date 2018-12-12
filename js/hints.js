@@ -291,6 +291,11 @@ function fix_all_links () {
     sh.remove_ui();
     totally_done += 1;
   }
+  browser.runtime.sendMessage({
+    "url": document.location.href.toString(),
+    "message": totally_done,
+    "type": "updatebadge"
+  });
 }
 
 

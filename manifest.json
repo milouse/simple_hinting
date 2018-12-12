@@ -32,6 +32,14 @@
     "all_frames": true,
     "run_at": "document_start"
   }],
+  "browser_action": {
+    "default_icon": {
+      "16": "img/icon16.png",
+      "32": "img/icon32.png"
+    },
+    "browser_style": true,
+    "default_title": "__MSG_extensionTitle__"
+  },
   "options_ui": {
     "page": "options.html"
   }
