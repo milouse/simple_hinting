@@ -18,7 +18,8 @@ ifeq ($(TARGET), chromium)
 endif
 
 beta: js/browser-polyfill.min.js
-	$(WEBEXT) sign $(WEBEXTOPTS) --api-key=$$AMO_JWT_ISSUER --api-secret=$$AMO_JWT_SECRET || true
+	$(WEBEXT) sign --api-key=$$AMO_JWT_ISSUER --api-secret=$$AMO_JWT_SECRET \
+		--channel=unlisted $(WEBEXTOPTS) || true
 	gio open "https://addons.mozilla.org/en-US/developers/addon/simple-hinting/versions"
 
 clean:
