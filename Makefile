@@ -4,7 +4,7 @@ BUILD_FILE = web-ext-artifacts/simple_hinting-$(VERSION).zip
 WEBEXT = ./node_modules/web-ext/bin/web-ext
 WEBEXTOPTS = --ignore-files Makefile webextension-polyfill "package*.json" "web-ext-artifacts*" "**/*.xcf"
 
-.PHONY: beta build clean
+.PHONY: beta build clean distclean
 
 all: build
 
@@ -27,7 +27,6 @@ clean:
 
 distclean:
 	rm -rf node_modules
-	rm -f package-lock.json
 
 js/browser-polyfill.min.js:
 	git clone "https://github.com/mozilla/webextension-polyfill.git"
