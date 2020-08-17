@@ -1,6 +1,6 @@
 {
   "name": "simple_hinting",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": "Étienne Deparis",
   "scripts": {
     "dev": "web-ext run --bc --ignore-files Makefile webextension-polyfill \"package*.json\" \"**/*.xcf\"",
