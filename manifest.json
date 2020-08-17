@@ -14,7 +14,7 @@
   "applications": {
     "gecko": {
       "id": "simple_hinting@umaneti.net",
-      "strict_min_version": "56.0"
+      "strict_min_version": "57.0"
     }
   },
   "permissions": ["<all_urls>", "storage", "contextMenus"],

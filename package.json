@@ -8,6 +8,6 @@
     "chromebuild": "TARGET=chromium make build"
   },
   "devDependencies": {
-    "web-ext": "^2.9.3"
+    "web-ext": "^5.0"
   }
 }
