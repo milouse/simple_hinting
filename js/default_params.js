@@ -11,7 +11,7 @@ var actionkeys = {
   "a": "cleanall"
 };
 
-var default_unshorten_service = "https://unshorten.deparis.io/c?url="
+var default_unshorten_service = "https://unshorten.umaneti.net/c?url="
 var unshorten_service = default_unshorten_service;
 
 function onError(error) {
@@ -27,7 +27,7 @@ function onError(error) {
 
 var unwanted_params = [];
 function fetchUnwantedParams() {
-  return fetch("https://unshorten.deparis.io/params").then(
+  return fetch("https://unshorten.umaneti.net/params").then(
     function(response) {
       return response.json();
     }, onError
@@ -45,7 +45,7 @@ function initUnwantedParams() {
 
 var tiny_domains = [];
 function fetchTinyDomains() {
-  return fetch("https://unshorten.deparis.io/domains").then(
+  return fetch("https://unshorten.umaneti.net/domains").then(
     function(response) {
       return response.json();
     }, onError

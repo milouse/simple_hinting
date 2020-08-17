@@ -24,7 +24,7 @@ The keycodes are the following:
 At any time, pressing `c` or `Esc` will cancel the link selection and
 remove all green labels.
 
-![screenshot](https://git.deparis.io/simple_hinting/plain/img/screen.png)
+![screenshot](https://git.umaneti.net/simple_hinting/plain/img/screen.png)
 
 ## Privacy
 
@@ -33,9 +33,9 @@ attributes from the URL you are trying to go to. The list of the banned
 attributes is customizable in the addon options.
 
 In order to remove attributes from short URL (e.g. on Twitter), this
-addon call an [external web service](https://unshorten.deparis.io/),
+addon call an [external web service](https://unshorten.umaneti.net/),
 which is responsible for expanding this kind of links. The source code
-of this service is available [as a git repository](https://git.deparis.io/unshorten/).
+of this service is available [as a git repository](https://git.umaneti.net/unshorten/).
 The location of this service is customizable in the addon options, thus
 you are free to host your own, or to use another service
 (e.g. unshorten.me).
