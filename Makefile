@@ -1,10 +1,9 @@
-TARGET     = firefox
-VERSION   != sed -nr "s/^\s+\"version\": \"(.+)\",$$/\1/p" manifest.json
-BUILD_FILE = web-ext-artifacts/simple_hinting-$(VERSION).zip
+TARGET = firefox
+VERSION = $(shell sed -nr "s/^\s+\"version\": \"(.+)\",$$/\1/p" manifest.json)
 WEBEXT = ./node_modules/web-ext/bin/web-ext
-WEBEXTOPTS = --ignore-files Makefile webextension-polyfill "package*.json" "web-ext-artifacts*" "**/*.xcf"
+WEBEXTOPTS = --ignore-files Makefile webextension-polyfill "package*.json" "web-ext-artifacts*" "img/icon.xcf"
 
-.PHONY: beta build clean distclean
+.PHONY: beta build clean cleanall
 
 all: build
 
@@ -25,13 +24,13 @@ beta: js/browser-polyfill.min.js
 clean:
 	rm -rf webextension-polyfill
 
-distclean:
+cleanall: clean
 	rm -rf node_modules
 
 js/browser-polyfill.min.js:
-	git clone "https://github.com/mozilla/webextension-polyfill.git"
+	[ -d webextension-polyfill ] && git -C webextension-polyfill pull || \
+		git clone "https://github.com/mozilla/webextension-polyfill.git"
 	sed -i "s/sourceMap: true,/sourceMap: false,/" webextension-polyfill/Gruntfile.js
 	sed -i "/\"prepublish\":/d" webextension-polyfill/package.json
-	cd webextension-polyfill && \
-		npm install && npm run build && npm run test
+	cd webextension-polyfill && npm install && npm run build && npm run test
 	cp webextension-polyfill/dist/browser-polyfill.min.js js/
