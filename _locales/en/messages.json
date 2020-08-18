@@ -7,6 +7,10 @@
     "message": "Allow keyboard browsing through links hinting, and protect a little bit more your privacy.",
     "description": "Description of the extension"
   },
+  "extensionCommand": {
+    "message": "Keybinding to toggle links hints",
+    "description": "Description of the command to use to toggle links hints"
+  },
   "fixThisLink": {
     "message": "Fix this link",
     "description": "Context menu item label"

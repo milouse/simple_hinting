@@ -7,6 +7,10 @@
     "message": "Facilite la navigation au clavier via des étiquettes ajoutés aux liens, tout en protégeant un peu mieux votre vie privée.",
     "description": "Description de l'extension"
   },
+  "extensionCommand": {
+    "message": "Raccourcis clavier pour afficher ou cacher les étiquettes des liens",
+    "description": "Description of the command to use to toggle links hints"
+  },
   "fixThisLink": {
     "message": "Nettoyer ce lien",
     "description": "Titre d'un élément du menu contextuel"

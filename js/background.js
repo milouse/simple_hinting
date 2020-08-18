@@ -1,3 +1,6 @@
+/**
+ * Listener for events from the content scripts
+ */
 var handled_links = 0;
 var last_update_badge = null;
 function answerContentScriptRequests (request, sender) {
@@ -12,7 +15,7 @@ function answerContentScriptRequests (request, sender) {
     let now = Date.now()
     /* Some page may generate a lot of subcount we have to add for the
      * badge. But some time later, if the user want to recompute the
-     * links, we should note add the new batch to the old one. 2 seconds
+     * links, we should not add the new batch to the old one. 2 seconds
      * seems to be a good interval to differentiate machine from human.
      */
     if (last_update_badge && (now - last_update_badge) > 2000) {
@@ -30,6 +33,10 @@ function answerContentScriptRequests (request, sender) {
 }
 browser.runtime.onMessage.addListener(answerContentScriptRequests);
 
+
+/**
+ * Setup context menu items
+ */
 browser.contextMenus.create({
   id: "sh-fix-link-at-point",
   title: browser.i18n.getMessage("fixThisLink"),
@@ -53,4 +60,16 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
 
 browser.browserAction.onClicked.addListener(function(tab) {
   browser.tabs.sendMessage(tab.id, { message: "fix_all" });
+});
+
+
+/**
+ * Listener for browser commands
+ */
+browser.commands.onCommand.addListener(function(command) {
+  if (command == "toggle-hinting") {
+    browser.tabs.query({currentWindow: true, active: true}).then(function(tabs){
+      browser.tabs.sendMessage(tabs[0].id, { message: "toggle_ui" });
+    });
+  }
 });

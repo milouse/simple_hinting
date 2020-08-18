@@ -249,27 +249,62 @@ SimpleHinting.prototype.fix_one_link = function (link_uri) {
   }
 }
 
+var main_simple_hinting = new SimpleHinting();
 
-function is_lshift (e) {
-  return (e.key === "Shift" || e.key === "GroupPrevious" || e.shiftKey);
-}
 
-function is_alt (e) {
-  return (e.key === "Alt" || e.key === "Meta" || e.altKey);
-}
-
-function is_escape (e) {
-  return (e.key === "Escape" || e.key === "Esc" || e.key === cancelkey);
-}
-
-function is_command (e) {
-  var is_c = false;
+function is_command (key) {
+  let is_c = false;
   try {
-    is_c = Object.keys(actionkeys).indexOf(e.key) !== -1;
-  } catch (e) {
-    onError(`Failed reading key: ${e}`);
+    is_c = Object.keys(actionkeys).indexOf(key) !== -1;
+  } catch (_e) {
+    onError(`Failed reading key: ${key}`);
   }
   return is_c;
+}
+
+function input_key_listener (e) {
+  const key = e.key;
+  if(key === "Escape" || key === "Esc" || key === cancelkey) {
+    main_simple_hinting.remove_ui();
+
+  } else if (key === "Backspace") {
+    main_simple_hinting.input = main_simple_hinting.input.slice(0, -1);
+    if (!main_simple_hinting.highlight())
+      main_simple_hinting.remove_ui();
+
+  } else if (key === viewkey) {
+    main_simple_hinting.view_link(key);
+
+  } else if (is_command(key)) {
+    if (actionkeys[key] === "cleanall") {
+      main_simple_hinting.remove_ui();
+      fix_all_links();
+
+    } else {
+      main_simple_hinting.open_link(key);
+    }
+
+  } else if (Number.isInteger(Number.parseInt(key))) {
+    main_simple_hinting.input += key;
+    if (!main_simple_hinting.highlight())
+      main_simple_hinting.remove_ui();
+  }
+  return true
+}
+
+
+function toggle_main_simple_hinting_ui () {
+  if (main_simple_hinting.ui_visible) {
+    // Remove key handler
+    window.removeEventListener("keyup", input_key_listener, false);
+    // Remove UI
+    main_simple_hinting.remove_ui();
+  } else {
+    // Set key handler
+    window.addEventListener("keyup", input_key_listener, false);
+    // Add UI
+    main_simple_hinting.create_ui();
+  }
 }
 
 function fix_all_links () {
@@ -293,50 +328,6 @@ function fix_all_links () {
     "type": "updatebadge"
   });
 }
-
-
-var main_simple_hinting = new SimpleHinting();
-
-// set key handler
-window.addEventListener("keyup", function(e) {
-  if (is_lshift(e) && is_alt(e)) {
-    if (main_simple_hinting.ui_visible) {
-      main_simple_hinting.remove_ui();
-    } else {
-      main_simple_hinting.create_ui();
-    }
-    return true;
-  } else if (!main_simple_hinting.ui_visible) {
-    return false;
-  }
-
-  if(is_escape(e)) {
-    main_simple_hinting.remove_ui();
-
-  } else if (e.key === "Backspace") {
-    main_simple_hinting.input = main_simple_hinting.input.slice(0, -1);
-    if (!main_simple_hinting.highlight())
-      main_simple_hinting.remove_ui();
-
-  } else if (e.key === viewkey) {
-    main_simple_hinting.view_link(e.key);
-
-  } else if (is_command(e)) {
-    if (actionkeys[e.key] === "cleanall") {
-      main_simple_hinting.remove_ui();
-      fix_all_links();
-
-    } else {
-      main_simple_hinting.open_link(e.key);
-    }
-
-  } else if (Number.isInteger(Number.parseInt(e.key))) {
-    main_simple_hinting.input += e.key;
-    if (!main_simple_hinting.highlight())
-      main_simple_hinting.remove_ui();
-  }
-  return true
-}, false);
 
 
 let opts = ["unwanted_params", "tiny_domains_list", "unshorten_url"];
@@ -372,6 +363,8 @@ browser.runtime.onMessage.addListener(function(data, sender) {
     sh.fix_one_link(link_uri);
   } else if (data.message === "fix_all") {
     fix_all_links();
+  } else if (data.message === "toggle_ui") {
+    toggle_main_simple_hinting_ui();
   }
   return true;
 });
