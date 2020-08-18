@@ -5,6 +5,8 @@ Allow keyboard browsing through links hinting.
 This addon is available on
 [AMO](https://addons.mozilla.org/en-US/firefox/addon/simple-hinting/).
 
+## Usage
+
 It displays small green numbered labels next to the links of the current
 page when you press `Alt + Shift`.
 
