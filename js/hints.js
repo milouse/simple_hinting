@@ -60,10 +60,6 @@ SimpleHinting.prototype.clean_link = function (link) {
 }
 
 SimpleHinting.prototype.unshorten_link = function (link, success) {
-  if (link.hasAttribute("data-expanded-url")){
-    // shortcut for twitter timeline links
-    link.href = link.getAttribute("data-expanded-url");
-  }
   if (tiny_domains.indexOf(link.hostname) === -1) {
     return success.call(this, link);
   }
@@ -96,8 +92,8 @@ SimpleHinting.prototype.update_link = function (link, cl) {
     link.textContent = cl;
     return true;
   }
-  // Twitter hack
-  if (tiny_domains.indexOf(link_content.split("/",2)[0]) !== -1) {
+  // Twitter hack as it hides the scheme
+  if (tiny_domains.indexOf(link_content.split("/", 2)[0]) !== -1) {
     link.textContent = cl;
     return true;
   }
