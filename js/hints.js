@@ -18,7 +18,7 @@ function SimpleHinting () {
 // functions
 SimpleHinting.prototype.highlight = function () {
   var at_least_one_match = false;
-  for(let id in this.labels) {
+  for (const id in this.labels) {
     if (this.input && id.match("^" + this.input) !== null) {
       at_least_one_match = true;
       this.labels[id].rep.classList.add("sh_hint_hl");
@@ -35,14 +35,14 @@ SimpleHinting.prototype.clean_attributes = function (url_part, symbol) {
   // url_part may be "search" or "hash"
   try {
     var query = url_part.substr(1).split("&");
-  } catch (e) {
+  } catch {
     return url_part;
   }
   var new_query = [];
-  for (let i = 0; i < query.length; i++) {
-    let cur_crit = query[i].split("=");
+  for (const param of query) {
+    let cur_crit = param.split("=");
     if (unwanted_params.indexOf(cur_crit[0]) === -1) {
-      new_query.push(query[i]);
+      new_query.push(param);
     }
   }
   if (new_query.length > 0) {
@@ -66,15 +66,13 @@ SimpleHinting.prototype.unshorten_link = function (link, success) {
     return success.call(this, link);
   }
   try {
-    let req_uri = unshorten_service + link.href;
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", req_uri);
-    var ext_this = this;
-    xhr.onload = function () {
+    xhr.open("GET", unshorten_service + link.href);
+    xhr.onload = () => {
       link.href = xhr.responseText.trim();
-      success.call(ext_this, link);
+      success.call(this, link);
     };
-    xhr.onerror = function () { throw xhr.statusText; };
+    xhr.onerror = () => { throw xhr.statusText; };
     xhr.send();
   } catch (e) {
     onError(`Ajax failed ${e}`);
@@ -103,8 +101,8 @@ SimpleHinting.prototype.update_link = function (link, cl) {
 }
 
 SimpleHinting.prototype.view_link = function () {
-  var col = browser.i18n.getMessage("columnSeparator");
-  for(let id in this.labels) {
+  const col = browser.i18n.getMessage("columnSeparator");
+  for (let id in this.labels) {
     if (id === 1) continue;
     if (this.labels[id].a.tagName !== "A") continue;
     if (this.input && id.match("^" + this.input) !== null) {
@@ -126,16 +124,13 @@ SimpleHinting.prototype.view_link = function () {
 }
 
 SimpleHinting.prototype.open_link = function (keyname) {
-  try {
-    var a = this.labels[this.input].a;
-    if (!a) throw "no link found";
-    action = actionkeys[keyname];
-    if (!action) throw "no action found";
-  } catch (e) {
-    onError(`Failed command: ${e}`);
-  } finally {
-    this.remove_ui();
+  let a = null;
+  if (this.labels[this.input]) {
+    a = this.labels[this.input].a;
   }
+  const action = actionkeys[keyname];
+  this.remove_ui();
+  if (!a || !action) return;
   if (a.tagName !== "A") {
     a.focus();
     return;
@@ -154,7 +149,7 @@ SimpleHinting.prototype.open_link = function (keyname) {
 
 // Remove labels from the DOM
 SimpleHinting.prototype.remove_ui = function () {
-  for(let id in this.labels) {
+  for (let id in this.labels) {
     let pe = this.labels[id].rep.parentElement;
     if (pe) pe.removeChild(this.labels[id].rep);
   }
@@ -176,7 +171,7 @@ SimpleHinting.prototype.create_ui = function () {
   ankers.unshift(current_page);
 
   for (let i = 0; i < ankers.length; i++) {
-    let a = ankers[i];
+    const a = ankers[i];
     if (a.tagName === "A" && !a.href) continue;
     // Are you visible?
     if (a.hidden || a.style.display === "none" ||
@@ -223,7 +218,7 @@ SimpleHinting.prototype.base = function (n, b) {
 }
 
 SimpleHinting.prototype.fix_one_link = function (link_uri) {
-  var all_links = document.querySelectorAll(
+  const all_links = document.querySelectorAll(
     "a[href='" + link_uri + "']");
   for (let i = 0; i < all_links.length; i++) {
     let link = all_links[i];
@@ -308,7 +303,7 @@ function toggle_main_simple_hinting_ui () {
 }
 
 function fix_all_links () {
-  var all_page_links = document.querySelectorAll("A");
+  const all_page_links = document.querySelectorAll("A");
   var already_done = [];
   var totally_done = 0;
   for (let i = 0; i < all_page_links.length; i++) {
@@ -361,8 +356,7 @@ browser.runtime.onMessage.addListener(function(data, sender) {
     if (!data["link_uri"]) return false;
     let link_uri = data.link_uri.trim();
     if (link_uri === "" || link_uri[0] === "#") return false;
-    let sh = new SimpleHinting();
-    sh.fix_one_link(link_uri);
+    new SimpleHinting().fix_one_link(link_uri);
   } else if (data.message === "fix_all") {
     fix_all_links();
   } else if (data.message === "toggle_ui") {

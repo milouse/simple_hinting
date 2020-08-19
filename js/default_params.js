@@ -13,7 +13,7 @@ const actionkeys = {
   "a": "cleanall"
 };
 
-const default_unshorten_service = "https://unshorten.umaneti.net/c?url="
+const default_unshorten_service = "https://unshorten.umaneti.net/c?url=";
 var unshorten_service = default_unshorten_service;
 
 function onError(error) {
