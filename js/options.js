@@ -1,3 +1,5 @@
+"use strict";
+
 function parse_list_field(field) {
   var clean_params = [];
   if (field && field.value != "") {

@@ -1,7 +1,9 @@
+"use strict";
+
 // Default keys
-var cancelkey = "c";
-var viewkey = "v";
-var actionkeys = {
+const cancelkey = "c";
+const viewkey = "v";
+const actionkeys = {
   "f": "follow",
   "Enter": "follow",
   "w": "newwin",
@@ -11,7 +13,7 @@ var actionkeys = {
   "a": "cleanall"
 };
 
-var default_unshorten_service = "https://unshorten.umaneti.net/c?url="
+const default_unshorten_service = "https://unshorten.umaneti.net/c?url="
 var unshorten_service = default_unshorten_service;
 
 function onError(error) {

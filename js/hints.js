@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * This script is heavily inspired by previous work by
  * Christian Hahn (2010) for the surf webbrowser:
@@ -6,7 +8,7 @@
 
 
 // Globals
-var SimpleHinting = function () {
+function SimpleHinting () {
   this.nr_base = 10;   // >=10 : normal integer,
   this.labels = new Object();
   this.ui_visible = false;
@@ -30,7 +32,7 @@ SimpleHinting.prototype.highlight = function () {
 }
 
 SimpleHinting.prototype.clean_attributes = function (url_part, symbol) {
-  // url_part may be 'search' or 'hash'
+  // url_part may be "search" or "hash"
   try {
     var query = url_part.substr(1).split("&");
   } catch (e) {
@@ -181,7 +183,7 @@ SimpleHinting.prototype.create_ui = function () {
         a.style.visibility === "hidden") {
       continue;
     }
-    astyles = window.getComputedStyle(a);
+    let astyles = window.getComputedStyle(a);
     if (astyles.display === "none" || astyles.visibility === "hidden") {
       continue;
     }
@@ -248,8 +250,6 @@ SimpleHinting.prototype.fix_one_link = function (link_uri) {
     });
   }
 }
-
-var main_simple_hinting = new SimpleHinting();
 
 
 function is_command (key) {
@@ -329,6 +329,8 @@ function fix_all_links () {
   });
 }
 
+
+const main_simple_hinting = new SimpleHinting();
 
 let opts = ["unwanted_params", "tiny_domains_list", "unshorten_url"];
 browser.storage.local.get(opts).then(function (result) {

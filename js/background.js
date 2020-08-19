@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Listener for events from the content scripts
  */
