@@ -28,6 +28,7 @@ SimpleHinting.prototype.highlight = function () {
     if (id !== 1)
       this.labels[id].rep.textContent = id;
   }
+  this.build_info_bar();
   return at_least_one_match;
 }
 
@@ -153,9 +154,38 @@ SimpleHinting.prototype.remove_ui = function () {
     let pe = this.labels[id].rep.parentElement;
     if (pe) pe.removeChild(this.labels[id].rep);
   }
+  const bar = document.getElementById("simple_hinting_info_bar");
+  if (bar) bar.remove();
   this.labels = new Object();
   this.ui_visible = false;
   this.input = "";
+}
+
+// Create keybinding info bar
+SimpleHinting.prototype.build_info_bar = function () {
+  let bar = document.getElementById("simple_hinting_info_bar");
+  if (bar) bar.remove();
+  bar = document.createElement("P");
+  bar.id = "simple_hinting_info_bar";
+  bar.className = "sh_hint sh_bar sh_info_bar";
+  let texts = [
+    "Clean all links ‘a’",
+    "Quit ‘Echap’ or ‘c’"
+  ];
+  if (this.input !== "") {
+    texts.unshift(
+      "Follow ‘f’ or ‘Enter’",
+      "New Window ‘w’",
+      "New Tab ‘t’",
+      "New Incognito Window ‘i’ or ‘p’",
+      "Clean/view selected link target ‘v’"
+    );
+  }
+  for (const label of texts) {
+    bar.appendChild(document.createTextNode(label));
+    bar.appendChild(document.createElement("BR"));
+  }
+  document.body.appendChild(bar);
 }
 
 // Create labels when needed
@@ -194,6 +224,7 @@ SimpleHinting.prototype.create_ui = function () {
     if (i === 0) {
       d.textContent += browser.i18n.getMessage("columnSeparator") +
         this.clean_link(a);
+      d.classList.add("sh_bar");
       d.classList.add("sh_hint_first");
       document.body.appendChild(d);
     } else {
@@ -204,6 +235,7 @@ SimpleHinting.prototype.create_ui = function () {
       }
     }
   }
+  this.build_info_bar();
   this.ui_visible = true;
 }
 

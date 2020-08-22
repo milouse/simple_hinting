@@ -11,12 +11,19 @@
     z-index: 99;
 }
 
-.sh_hint_first {
+.sh_bar {
     display: block;
-    position: absolute;
     top: 0px;
-    left: 0px;
     line-height: 1.5em;
+}
+
+.sh_hint_first {
+    left: 0px;
+}
+
+.sh_info_bar {
+    right: 0px;
+    padding: 2px;
 }
 
 .sh_hint_hl {
