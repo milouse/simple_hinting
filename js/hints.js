@@ -1,12 +1,58 @@
-/**
- * This script is heavily inspired by previous work by
- * Christian Hahn (2010) for the surf webbrowser:
- * http://surf.suckless.org/files/easy_links
- */
+"use strict";
+
+// Default keys
+const cancelkey = "c";
+const viewkey = "v";
+const actionkeys = {
+  "f": "follow",
+  "Enter": "follow",
+  "w": "newwin",
+  "t": "newtab",
+  "i": "incognito",
+  "p": "incognito",
+  "a": "cleanall"
+};
+
+function onError(error) {
+  let message = `[Simple Hinting extension] ${error}`;
+  let pref_msg_status = document.getElementById("save-status");
+  if (pref_msg_status) {
+    pref_msg_status.textContent = message;
+    pref_msg_status.style.color = "red";
+  } else {
+    console.error(message);
+  }
+}
+
+var unwanted_params = [];
+function fetchUnwantedParams() {
+  return fetch("https://unshorten.umaneti.net/params").then(
+    function(response) {
+      return response.json();
+    }, onError
+  ).then(
+    function(upstream_params) {
+      unwanted_params = upstream_params;
+      browser.storage.local.set({ "unwanted_params": unwanted_params });
+    }, onError
+  );
+}
+
+var tiny_domains = [];
+function fetchTinyDomains() {
+  return fetch("https://unshorten.umaneti.net/domains").then(
+    function(response) {
+      return response.json();
+    }, onError
+  ).then(function(upstream_tiny_domains) {
+    tiny_domains = upstream_tiny_domains;
+    browser.storage.local.set({ "tiny_domains_list": tiny_domains });
+  }, onError);
+}
 
 
 // Globals
-var SimpleHinting = function () {
+function SimpleHinting () {
   this.nr_base = 10;   // >=10 : normal integer,
   this.labels = new Object();
   this.ui_visible = false;
@@ -16,7 +62,7 @@ var SimpleHinting = function () {
 // functions
 SimpleHinting.prototype.highlight = function () {
   var at_least_one_match = false;
-  for(let id in this.labels) {
+  for (const id in this.labels) {
     if (this.input && id.match("^" + this.input) !== null) {
       at_least_one_match = true;
       this.labels[id].rep.classList.add("sh_hint_hl");
@@ -26,21 +72,22 @@ SimpleHinting.prototype.highlight = function () {
     if (id !== 1)
       this.labels[id].rep.textContent = id;
   }
+  this.build_info_bar();
   return at_least_one_match;
 }
 
 SimpleHinting.prototype.clean_attributes = function (url_part, symbol) {
-  // url_part may be 'search' or 'hash'
+  // url_part may be "search" or "hash"
   try {
     var query = url_part.substr(1).split("&");
-  } catch (e) {
+  } catch {
     return url_part;
   }
   var new_query = [];
-  for (let i = 0; i < query.length; i++) {
-    let cur_crit = query[i].split("=");
+  for (const param of query) {
+    let cur_crit = param.split("=");
     if (unwanted_params.indexOf(cur_crit[0]) === -1) {
-      new_query.push(query[i]);
+      new_query.push(param);
     }
   }
   if (new_query.length > 0) {
@@ -60,23 +107,17 @@ SimpleHinting.prototype.clean_link = function (link) {
 }
 
 SimpleHinting.prototype.unshorten_link = function (link, success) {
-  if (link.hasAttribute("data-expanded-url")){
-    // shortcut for twitter timeline links
-    link.href = link.getAttribute("data-expanded-url");
-  }
   if (tiny_domains.indexOf(link.hostname) === -1) {
     return success.call(this, link);
   }
   try {
-    let req_uri = unshorten_service + link.href;
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", req_uri);
-    var ext_this = this;
-    xhr.onload = function () {
+    xhr.open("GET", "https://unshorten.umaneti.net/c?url=" + link.href);
+    xhr.onload = () => {
       link.href = xhr.responseText.trim();
-      success.call(ext_this, link);
+      success.call(this, link);
     };
-    xhr.onerror = function () { throw xhr.statusText; };
+    xhr.onerror = () => { throw xhr.statusText; };
     xhr.send();
   } catch (e) {
     onError(`Ajax failed ${e}`);
@@ -96,8 +137,8 @@ SimpleHinting.prototype.update_link = function (link, cl) {
     link.textContent = cl;
     return true;
   }
-  // Twitter hack
-  if (tiny_domains.indexOf(link_content.split("/",2)[0]) !== -1) {
+  // Twitter hack as it hides the scheme
+  if (tiny_domains.indexOf(link_content.split("/", 2)[0]) !== -1) {
     link.textContent = cl;
     return true;
   }
@@ -105,8 +146,8 @@ SimpleHinting.prototype.update_link = function (link, cl) {
 }
 
 SimpleHinting.prototype.view_link = function () {
-  var col = browser.i18n.getMessage("columnSeparator");
-  for(let id in this.labels) {
+  const col = browser.i18n.getMessage("columnSeparator");
+  for (let id in this.labels) {
     if (id === 1) continue;
     if (this.labels[id].a.tagName !== "A") continue;
     if (this.input && id.match("^" + this.input) !== null) {
@@ -128,16 +169,13 @@ SimpleHinting.prototype.view_link = function () {
 }
 
 SimpleHinting.prototype.open_link = function (keyname) {
-  try {
-    var a = this.labels[this.input].a;
-    if (!a) throw "no link found";
-    action = actionkeys[keyname];
-    if (!action) throw "no action found";
-  } catch (e) {
-    onError(`Failed command: ${e}`);
-  } finally {
-    this.remove_ui();
+  let a = null;
+  if (this.labels[this.input]) {
+    a = this.labels[this.input].a;
   }
+  const action = actionkeys[keyname];
+  this.remove_ui();
+  if (!a || !action) return;
   if (a.tagName !== "A") {
     a.focus();
     return;
@@ -156,19 +194,54 @@ SimpleHinting.prototype.open_link = function (keyname) {
 
 // Remove labels from the DOM
 SimpleHinting.prototype.remove_ui = function () {
-  for(let id in this.labels) {
+  for (let id in this.labels) {
     let pe = this.labels[id].rep.parentElement;
     if (pe) pe.removeChild(this.labels[id].rep);
   }
+  const bar = document.getElementById("simple_hinting_info_bar");
+  if (bar) bar.remove();
   this.labels = new Object();
   this.ui_visible = false;
   this.input = "";
 }
 
+// Create keybinding info bar
+SimpleHinting.prototype.build_info_bar = function () {
+  let bar = document.getElementById("simple_hinting_info_bar");
+  if (bar) bar.remove();
+  bar = document.createElement("P");
+  bar.id = "simple_hinting_info_bar";
+  bar.className = "sh_hint sh_bar sh_info_bar";
+  let texts = [
+    "Clean all links ‘a’",
+    "Quit ‘Echap’ or ‘c’"
+  ];
+  if (this.input !== "") {
+    texts.unshift(
+      "Follow ‘f’ or ‘Enter’",
+      "New Window ‘w’",
+      "New Tab ‘t’",
+      "New Incognito Window ‘i’ or ‘p’",
+      "Clean/view selected link target ‘v’"
+    );
+  }
+  for (const label of texts) {
+    bar.appendChild(document.createTextNode(label));
+    bar.appendChild(document.createElement("BR"));
+  }
+  document.body.appendChild(bar);
+}
+
 // Create labels when needed
 SimpleHinting.prototype.create_ui = function () {
+  // cleanup previous attempt
   this.labels = new Object();
   this.input = "";
+  for (const hint of document.querySelectorAll(".sh_hint")) {
+    hint.remove();
+  }
+
+  // select elements to decorate
   let selectors = "a, input[type=text], input[type=search], textarea";
   var ankers = Array.from(document.querySelectorAll(selectors));
 
@@ -178,14 +251,14 @@ SimpleHinting.prototype.create_ui = function () {
   ankers.unshift(current_page);
 
   for (let i = 0; i < ankers.length; i++) {
-    let a = ankers[i];
+    const a = ankers[i];
     if (a.tagName === "A" && !a.href) continue;
     // Are you visible?
     if (a.hidden || a.style.display === "none" ||
         a.style.visibility === "hidden") {
       continue;
     }
-    astyles = window.getComputedStyle(a);
+    let astyles = window.getComputedStyle(a);
     if (astyles.display === "none" || astyles.visibility === "hidden") {
       continue;
     }
@@ -201,6 +274,7 @@ SimpleHinting.prototype.create_ui = function () {
     if (i === 0) {
       d.textContent += browser.i18n.getMessage("columnSeparator") +
         this.clean_link(a);
+      d.classList.add("sh_bar");
       d.classList.add("sh_hint_first");
       document.body.appendChild(d);
     } else {
@@ -211,6 +285,7 @@ SimpleHinting.prototype.create_ui = function () {
       }
     }
   }
+  this.build_info_bar();
   this.ui_visible = true;
 }
 
@@ -225,7 +300,7 @@ SimpleHinting.prototype.base = function (n, b) {
 }
 
 SimpleHinting.prototype.fix_one_link = function (link_uri) {
-  var all_links = document.querySelectorAll(
+  const all_links = document.querySelectorAll(
     "a[href='" + link_uri + "']");
   for (let i = 0; i < all_links.length; i++) {
     let link = all_links[i];
@@ -254,30 +329,63 @@ SimpleHinting.prototype.fix_one_link = function (link_uri) {
 }
 
 
-function is_lshift (e) {
-  return (e.key === "Shift" || e.key === "GroupPrevious" || e.shiftKey);
-}
-
-function is_alt (e) {
-  return (e.key === "Alt" || e.key === "Meta" || e.altKey);
-}
-
-function is_escape (e) {
-  return (e.key === "Escape" || e.key === "Esc" || e.key === cancelkey);
-}
-
-function is_command (e) {
-  var is_c = false;
+function is_command (key) {
+  let is_c = false;
   try {
-    is_c = Object.keys(actionkeys).indexOf(e.key) !== -1;
-  } catch (e) {
-    onError(`Failed reading key: ${e}`);
+    is_c = Object.keys(actionkeys).indexOf(key) !== -1;
+  } catch (_e) {
+    onError(`Failed reading key: ${key}`);
   }
   return is_c;
 }
 
+function input_key_listener (e) {
+  const key = e.key;
+  if(key === "Escape" || key === "Esc" || key === cancelkey) {
+    main_simple_hinting.remove_ui();
+
+  } else if (key === "Backspace") {
+    main_simple_hinting.input = main_simple_hinting.input.slice(0, -1);
+    if (!main_simple_hinting.highlight())
+      main_simple_hinting.remove_ui();
+
+  } else if (key === viewkey) {
+    main_simple_hinting.view_link(key);
+
+  } else if (is_command(key)) {
+    if (actionkeys[key] === "cleanall") {
+      main_simple_hinting.remove_ui();
+      fix_all_links();
+
+    } else {
+      main_simple_hinting.open_link(key);
+    }
+
+  } else if (Number.isInteger(Number.parseInt(key))) {
+    main_simple_hinting.input += key;
+    if (!main_simple_hinting.highlight())
+      main_simple_hinting.remove_ui();
+  }
+  return true
+}
+
+
+function toggle_main_simple_hinting_ui () {
+  if (main_simple_hinting.ui_visible) {
+    // Remove key handler
+    window.removeEventListener("keyup", input_key_listener, false);
+    // Remove UI
+    main_simple_hinting.remove_ui();
+  } else {
+    // Set key handler
+    window.addEventListener("keyup", input_key_listener, false);
+    // Add UI
+    main_simple_hinting.create_ui();
+  }
+}
+
 function fix_all_links () {
-  var all_page_links = document.querySelectorAll("A");
+  const all_page_links = document.querySelectorAll("A");
   var already_done = [];
   var totally_done = 0;
   for (let i = 0; i < all_page_links.length; i++) {
@@ -299,71 +407,29 @@ function fix_all_links () {
 }
 
 
-var main_simple_hinting = new SimpleHinting();
+const main_simple_hinting = new SimpleHinting();
 
-// set key handler
-window.addEventListener("keyup", function(e) {
-  if (is_lshift(e) && is_alt(e)) {
-    if (main_simple_hinting.ui_visible) {
-      main_simple_hinting.remove_ui();
+function SimpleHintingManager(callback) {
+  let opts = ["unwanted_params", "tiny_domains_list"];
+  browser.storage.local.get(opts).then(function (result) {
+    let initMethods = [];
+    if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
+      unwanted_params = result.unwanted_params;
     } else {
-      main_simple_hinting.create_ui();
+      initMethods.push(fetchUnwantedParams());
     }
-    return true;
-  } else if (!main_simple_hinting.ui_visible) {
-    return false;
-  }
-
-  if(is_escape(e)) {
-    main_simple_hinting.remove_ui();
-
-  } else if (e.key === "Backspace") {
-    main_simple_hinting.input = main_simple_hinting.input.slice(0, -1);
-    if (!main_simple_hinting.highlight())
-      main_simple_hinting.remove_ui();
-
-  } else if (e.key === viewkey) {
-    main_simple_hinting.view_link(e.key);
-
-  } else if (is_command(e)) {
-    if (actionkeys[e.key] === "cleanall") {
-      main_simple_hinting.remove_ui();
-      fix_all_links();
-
+    if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
+      tiny_domains = result.tiny_domains_list;
     } else {
-      main_simple_hinting.open_link(e.key);
+      initMethods.push(fetchTinyDomains());
     }
-
-  } else if (Number.isInteger(Number.parseInt(e.key))) {
-    main_simple_hinting.input += e.key;
-    if (!main_simple_hinting.highlight())
-      main_simple_hinting.remove_ui();
-  }
-  return true
-}, false);
-
-
-let opts = ["unwanted_params", "tiny_domains_list", "unshorten_url"];
-browser.storage.local.get(opts).then(function (result) {
-  if (result.unshorten_url && result.unshorten_url !== "") {
-    unshorten_service = result.unshorten_url;
-  }
-  let must_init = true;
-  if (unshorten_service !== default_unshorten_service) {
-    must_init = false;
-  }
-  if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
-    unwanted_params = result.unwanted_params;
-  } else if (must_init) {
-    initUnwantedParams();
-  }
-  if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
-    tiny_domains = result.tiny_domains_list;
-  } else if (must_init) {
-    initTinyDomains();
-  }
-}, onError);
-
+    if (initMethods.length > 0) {
+      Promise.all(initMethods).then(callback);
+    } else {
+      callback.call(null);
+    }
+  }, onError);
+}
 
 browser.runtime.onMessage.addListener(function(data, sender) {
   if (sender.id !== "simple_hinting@umaneti.net") return false;
@@ -372,10 +438,15 @@ browser.runtime.onMessage.addListener(function(data, sender) {
     if (!data["link_uri"]) return false;
     let link_uri = data.link_uri.trim();
     if (link_uri === "" || link_uri[0] === "#") return false;
-    let sh = new SimpleHinting();
-    sh.fix_one_link(link_uri);
+    SimpleHintingManager(function() {
+      new SimpleHinting().fix_one_link(link_uri);
+    });
   } else if (data.message === "fix_all") {
-    fix_all_links();
+    SimpleHintingManager(fix_all_links);
+  } else if (data.message === "toggle_ui") {
+    SimpleHintingManager(toggle_main_simple_hinting_ui);
+  } else if (data.message === "ping") {
+    return Promise.resolve({ message: "pong" });
   }
   return true;
 });
