@@ -399,6 +399,8 @@ browser.runtime.onMessage.addListener(function(data, sender) {
     fix_all_links();
   } else if (data.message === "toggle_ui") {
     toggle_main_simple_hinting_ui();
+  } else if (data.message === "ping") {
+    return Promise.resolve({ message: "pong" });
   }
   return true;
 });

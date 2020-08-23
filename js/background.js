@@ -1,6 +1,36 @@
 "use strict";
 
 /**
+ * Utils method to avoid <all_urls> permission
+ */
+function codeFilesAlreadyInjected(active_tab_id) {
+  return browser.tabs.sendMessage(
+    active_tab_id, { message: "ping" }
+  ).then(function(answer) {
+    if (answer.message === "pong") {
+      return true;
+    }
+    return false;
+  }).catch(async function() {
+    return false;
+  });
+}
+
+async function injectJsAndCssIfNecessary(active_tab_id) {
+  if (await codeFilesAlreadyInjected(active_tab_id)) {
+    console.log("[Simple Hinting extension] Files already there");
+    return true;
+  }
+  // Order matter…
+  console.log("[Simple Hinting extension] Injecting necessary files");
+  await browser.tabs.insertCSS({ file: "/css/hints.css" });
+  await browser.tabs.executeScript({ file: "/js/browser-polyfill.min.js" });
+  await browser.tabs.executeScript({ file: "/js/default_params.js" });
+  await browser.tabs.executeScript({ file: "/js/hints.js" });
+  return true;
+}
+
+/**
  * Listener for events from the content scripts
  */
 var handled_links = 0;
@@ -50,18 +80,22 @@ browser.contextMenus.create({
   contexts: ["page", "image"]
 });
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId == "sh-fix-link-at-point") {
-    browser.tabs.sendMessage(tab.id, {
-      message: "fix_one",
-      link_uri: info.linkUrl
-    });
-  } else if (info.menuItemId == "sh-fix-all") {
-    browser.tabs.sendMessage(tab.id, { message: "fix_all" });
-  }
+  injectJsAndCssIfNecessary(tab.id).then(function() {
+    if (info.menuItemId == "sh-fix-link-at-point") {
+      browser.tabs.sendMessage(tab.id, {
+        message: "fix_one",
+        link_uri: info.linkUrl
+      });
+    } else if (info.menuItemId == "sh-fix-all") {
+      browser.tabs.sendMessage(tab.id, { message: "fix_all" });
+    }
+  });
 });
 
 browser.browserAction.onClicked.addListener(function(tab) {
-  browser.tabs.sendMessage(tab.id, { message: "fix_all" });
+  injectJsAndCssIfNecessary(tab.id).then(function() {
+    browser.tabs.sendMessage(tab.id, { message: "fix_all" });
+  });
 });
 
 
@@ -71,7 +105,10 @@ browser.browserAction.onClicked.addListener(function(tab) {
 browser.commands.onCommand.addListener(function(command) {
   if (command == "toggle-hinting") {
     browser.tabs.query({currentWindow: true, active: true}).then(function(tabs){
-      browser.tabs.sendMessage(tabs[0].id, { message: "toggle_ui" });
+      const active_tab_id = tabs[0].id;
+      injectJsAndCssIfNecessary(active_tab_id).then(function() {
+        browser.tabs.sendMessage(active_tab_id, { message: "toggle_ui" });
+      });
     });
   }
 });
