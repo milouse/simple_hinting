@@ -7,7 +7,7 @@ This addon is available on [AMO][1].
 ## Usage
 
 It displays small green numbered labels next to the links of the current
-page when you press `Alt + Shift`.
+page when you press `Alt + Shift + L`.
 
 If you enter one of the displayed numbers, followed by a special
 keycode, you'll be redirected to the link target, either directly or by
@@ -17,8 +17,7 @@ The keycodes are the following:
 
 - `f` (*follow*), browse in current tab;
 - `t` (*tab*), open in a new tab;
-- `w` (*window*), open either a new window;
-  browser preference;
+- `w` (*window*), open in a new window;
 - `i` (*incognito*) or `p` (*private*), open in a new private window;
 - `v` (*view*), don't do anything, just display the target URL.
 
