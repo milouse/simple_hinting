@@ -40,8 +40,5 @@
     },
     "browser_style": true,
     "default_title": "__MSG_extensionTitle__"
-  },
-  "options_ui": {
-    "page": "options.html"
   }
 }

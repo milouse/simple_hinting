@@ -21,11 +21,10 @@ async function injectJsAndCssIfNecessary(active_tab_id) {
     console.log("[Simple Hinting extension] Files already there");
     return true;
   }
-  // Order matter…
   console.log("[Simple Hinting extension] Injecting necessary files");
-  await browser.tabs.insertCSS({ file: "/css/hints.css" });
+  browser.tabs.insertCSS({ file: "/css/hints.css" });
+  // Order matter...
   await browser.tabs.executeScript({ file: "/js/browser-polyfill.min.js" });
-  await browser.tabs.executeScript({ file: "/js/default_params.js" });
   await browser.tabs.executeScript({ file: "/js/hints.js" });
   return true;
 }

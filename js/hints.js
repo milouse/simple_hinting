@@ -1,10 +1,54 @@
 "use strict";
 
-/**
- * This script is heavily inspired by previous work by
- * Christian Hahn (2010) for the surf webbrowser:
- * http://surf.suckless.org/files/easy_links
- */
+// Default keys
+const cancelkey = "c";
+const viewkey = "v";
+const actionkeys = {
+  "f": "follow",
+  "Enter": "follow",
+  "w": "newwin",
+  "t": "newtab",
+  "i": "incognito",
+  "p": "incognito",
+  "a": "cleanall"
+};
+
+function onError(error) {
+  let message = `[Simple Hinting extension] ${error}`;
+  let pref_msg_status = document.getElementById("save-status");
+  if (pref_msg_status) {
+    pref_msg_status.textContent = message;
+    pref_msg_status.style.color = "red";
+  } else {
+    console.error(message);
+  }
+}
+
+var unwanted_params = [];
+function fetchUnwantedParams() {
+  return fetch("https://unshorten.umaneti.net/params").then(
+    function(response) {
+      return response.json();
+    }, onError
+  ).then(
+    function(upstream_params) {
+      unwanted_params = upstream_params;
+      browser.storage.local.set({ "unwanted_params": unwanted_params });
+    }, onError
+  );
+}
+
+var tiny_domains = [];
+function fetchTinyDomains() {
+  return fetch("https://unshorten.umaneti.net/domains").then(
+    function(response) {
+      return response.json();
+    }, onError
+  ).then(function(upstream_tiny_domains) {
+    tiny_domains = upstream_tiny_domains;
+    browser.storage.local.set({ "tiny_domains_list": tiny_domains });
+  }, onError);
+}
 
 
 // Globals
@@ -68,7 +112,7 @@ SimpleHinting.prototype.unshorten_link = function (link, success) {
   }
   try {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", unshorten_service + link.href);
+    xhr.open("GET", "https://unshorten.umaneti.net/c?url=" + link.href);
     xhr.onload = () => {
       link.href = xhr.responseText.trim();
       success.call(this, link);
@@ -365,27 +409,27 @@ function fix_all_links () {
 
 const main_simple_hinting = new SimpleHinting();
 
-let opts = ["unwanted_params", "tiny_domains_list", "unshorten_url"];
-browser.storage.local.get(opts).then(function (result) {
-  if (result.unshorten_url && result.unshorten_url !== "") {
-    unshorten_service = result.unshorten_url;
-  }
-  let must_init = true;
-  if (unshorten_service !== default_unshorten_service) {
-    must_init = false;
-  }
-  if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
-    unwanted_params = result.unwanted_params;
-  } else if (must_init) {
-    initUnwantedParams();
-  }
-  if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
-    tiny_domains = result.tiny_domains_list;
-  } else if (must_init) {
-    initTinyDomains();
-  }
-}, onError);
-
+function SimpleHintingManager(callback) {
+  let opts = ["unwanted_params", "tiny_domains_list"];
+  browser.storage.local.get(opts).then(function (result) {
+    let initMethods = [];
+    if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
+      unwanted_params = result.unwanted_params;
+    } else {
+      initMethods.push(fetchUnwantedParams());
+    }
+    if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
+      tiny_domains = result.tiny_domains_list;
+    } else {
+      initMethods.push(fetchTinyDomains());
+    }
+    if (initMethods.length > 0) {
+      Promise.all(initMethods).then(callback);
+    } else {
+      callback.call(null);
+    }
+  }, onError);
+}
 
 browser.runtime.onMessage.addListener(function(data, sender) {
   if (sender.id !== "simple_hinting@umaneti.net") return false;
@@ -394,11 +438,13 @@ browser.runtime.onMessage.addListener(function(data, sender) {
     if (!data["link_uri"]) return false;
     let link_uri = data.link_uri.trim();
     if (link_uri === "" || link_uri[0] === "#") return false;
-    new SimpleHinting().fix_one_link(link_uri);
+    SimpleHintingManager(function() {
+      new SimpleHinting().fix_one_link(link_uri);
+    });
   } else if (data.message === "fix_all") {
-    fix_all_links();
+    SimpleHintingManager(fix_all_links);
   } else if (data.message === "toggle_ui") {
-    toggle_main_simple_hinting_ui();
+    SimpleHintingManager(toggle_main_simple_hinting_ui);
   } else if (data.message === "ping") {
     return Promise.resolve({ message: "pong" });
   }

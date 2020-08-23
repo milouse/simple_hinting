@@ -26,29 +26,5 @@
   "columnSeparator": {
     "message": " : ",
     "description": "Espaces à utiliser de part et d'autre des deux points"
-  },
-  "optionsSaved": {
-    "message": "Préférences enregistrées !",
-    "description": "Message affiché lorsque les préférences sont enregistrées avec succès"
-  },
-  "unwantedParams": {
-    "message": "Paramètres non désirés :",
-    "description": "Description du champs des attributs non désirés sur la page de préférence"
-  },
-  "expandableDomains": {
-    "message": "Domaines des liens courts à reconnaître :",
-    "description": "Description du champs des domaines à étendre sur la page de préférence"
-  },
-  "unshortenService": {
-    "message": "URL de l'API de conversion des liens courts :",
-    "description": "Description du champs de l'URL de l'API à utiliser pour étendre les liens sur la page de préférence"
-  },
-  "savePrefButton": {
-    "message": "Enregistrer les préférences",
-    "description": "Texte sur le bouton de soumission sur la page des préférences"
-  },
-  "resetPrefButton": {
-    "message": "Revenir aux paramètres par défaut",
-    "description": "Texte sur le bouton de réinitialisation des préférences"
   }
 }
