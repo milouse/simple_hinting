@@ -18,7 +18,8 @@ The keycodes are the following:
 - `f` (*follow*), browse in current tab;
 - `t` (*tab*), open in a new tab;
 - `w` (*window*), open in a new window;
-- `i` (*incognito*) or `p` (*private*), open in a new private window;
+- `i` (*incognito*) or `p` (*private*), open in a new private window
+  (only if you've authorized this addons to run on private windows);
 - `v` (*view*), don't do anything, just display the target URL.
 
 At any time, pressing `c` or `Esc` will cancel the link selection and
@@ -35,9 +36,7 @@ attributes is customizable in the addon options.
 In order to remove attributes from short URL (e.g. on Twitter), this
 addon call an [external web service][2], which is responsible for
 expanding this kind of links. The source code of this service is
-available [as a git repository][3].  The location of this service is
-customizable in the addon options, thus you are free to host your own,
-or to use another service (e.g. unshorten.me).
+available [as a git repository][3].
 
 ## Credits
 
