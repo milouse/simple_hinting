@@ -190,8 +190,14 @@ SimpleHinting.prototype.build_info_bar = function () {
 
 // Create labels when needed
 SimpleHinting.prototype.create_ui = function () {
+  // cleanup previous attempt
   this.labels = new Object();
   this.input = "";
+  for (const hint of document.querySelectorAll(".sh_hint")) {
+    hint.remove();
+  }
+
+  // select elements to decorate
   let selectors = "a, input[type=text], input[type=search], textarea";
   var ankers = Array.from(document.querySelectorAll(selectors));
 
