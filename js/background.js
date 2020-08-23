@@ -11,22 +11,23 @@ function codeFilesAlreadyInjected(active_tab_id) {
       return true;
     }
     return false;
-  }).catch(async function() {
-    return false;
-  });
+  }).catch(() => false);
 }
 
-async function injectJsAndCssIfNecessary(active_tab_id) {
-  if (await codeFilesAlreadyInjected(active_tab_id)) {
-    console.log("[Simple Hinting extension] Files already there");
-    return true;
-  }
-  console.log("[Simple Hinting extension] Injecting necessary files");
-  browser.tabs.insertCSS({ file: "/css/hints.css" });
-  // Order matter...
-  await browser.tabs.executeScript({ file: "/js/browser-polyfill.min.js" });
-  await browser.tabs.executeScript({ file: "/js/hints.js" });
-  return true;
+function injectJsAndCssIfNecessary(active_tab_id) {
+  return codeFilesAlreadyInjected(active_tab_id).then(function(result) {
+    if (result) {
+      console.log("[Simple Hinting extension] Files already there");
+      return true;
+    }
+    console.log("[Simple Hinting extension] Injecting necessary files");
+    browser.tabs.insertCSS({ file: "/css/hints.css" });
+    return browser.tabs.executeScript(
+      { file: "/js/browser-polyfill.min.js" }
+    ).then(function() {
+      return browser.tabs.executeScript({ file: "/js/hints.js" });
+    });
+  });
 }
 
 /**
