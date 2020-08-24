@@ -112,22 +112,16 @@ SimpleHinting.prototype.clean_link = function (link) {
   return link.toString();
 }
 
-SimpleHinting.prototype.unshorten_link = function (link, success) {
-  if (tiny_domains.indexOf(link.hostname) === -1) {
-    return success.call(this, link);
+SimpleHinting.prototype.unshorten_link = async function (link, success) {
+  const uri = new URL(link.toString());
+  if (tiny_domains.indexOf(uri.hostname) === -1) {
+    return success.call(this, uri);
   }
-  try {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://unshorten.umaneti.net/c?url=" + link.href);
-    xhr.onload = () => {
-      link.href = xhr.responseText.trim();
-      success.call(this, link);
-    };
-    xhr.onerror = () => { throw xhr.statusText; };
-    xhr.send();
-  } catch (e) {
-    onError(`Ajax failed ${e}`);
-  }
+  return fetch(
+    "https://unshorten.umaneti.net/c?url=" + uri.toString()
+  ).then(
+    (response) => response.text()
+  ).then((body) => success.call(this, new URL(body.trim())))
 }
 
 SimpleHinting.prototype.update_link = function (link, cl) {
@@ -174,7 +168,7 @@ SimpleHinting.prototype.view_link = function () {
   }
 }
 
-SimpleHinting.prototype.open_link = function (keyname) {
+SimpleHinting.prototype.open_link = async function (keyname) {
   let a = null;
   if (this.labels[this.input]) {
     a = this.labels[this.input].a;
@@ -214,7 +208,7 @@ SimpleHinting.prototype.remove_ui = function () {
 }
 
 // Create keybinding info bar
-SimpleHinting.prototype.build_info_bar = function (matching_links) {
+SimpleHinting.prototype.build_info_bar = async function (matching_links) {
   let bar = document.getElementById("simple_hinting_info_bar");
   if (bar) bar.remove();
   bar = document.createElement("P");
