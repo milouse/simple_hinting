@@ -260,7 +260,7 @@ SimpleHinting.prototype.create_ui = function () {
 
   for (let i = 0; i < ankers.length; i++) {
     const a = ankers[i];
-    if (a.tagName === "A" && !a.href) continue;
+    if (a.tagName === "A" && !a.hasAttribute("href")) continue;
     // Are you visible?
     if (a.hidden || a.style.display === "none" ||
         a.style.visibility === "hidden") {
@@ -397,7 +397,7 @@ function fix_all_links () {
   var already_done = [];
   var totally_done = 0;
   for (let i = 0; i < all_page_links.length; i++) {
-    let link_uri = all_page_links[i].href.trim();
+    let link_uri = all_page_links[i].toString().trim();
     if (link_uri === "" || link_uri[0] == "#") continue;
     if (already_done.indexOf(link_uri) !== -1) continue;
     already_done.push(link_uri);
