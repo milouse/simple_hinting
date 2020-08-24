@@ -30,6 +30,14 @@
     background-color: #E3FF38;
     font-size: 15px;
 }
+.sh_hint_match {
+    /* add !important to try to overwrite website settings */
+    color: #000000 !important;
+    background-color: #E3FF38 !important;
+    border: 1px solid #E3FF38 !important;
+    padding: 2px !important;
+    text-decoration: none;
+}
 
 .sh_hint_view {
     z-index: 999;

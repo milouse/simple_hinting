@@ -61,19 +61,25 @@ function SimpleHinting () {
 
 // functions
 SimpleHinting.prototype.highlight = function () {
-  var at_least_one_match = false;
+  var matching_links = 0;
   for (const id in this.labels) {
     if (this.input && id.match("^" + this.input) !== null) {
-      at_least_one_match = true;
+      matching_links++;
       this.labels[id].rep.classList.add("sh_hint_hl");
     } else {
       this.labels[id].rep.classList.remove("sh_hint_hl");
     }
+    // Wait for next check to add the sh_hint_match class back
+    this.labels[id].a.classList.remove("sh_hint_match");
     if (id !== 1)
       this.labels[id].rep.textContent = id;
   }
+  if (matching_links == 0) return false;
   this.build_info_bar();
-  return at_least_one_match;
+  if (matching_links == 1) {
+    this.labels[this.input].a.classList.add("sh_hint_match");
+  }
+  return true;
 }
 
 SimpleHinting.prototype.clean_attributes = function (url_part, symbol) {
@@ -197,6 +203,8 @@ SimpleHinting.prototype.remove_ui = function () {
   for (let id in this.labels) {
     let pe = this.labels[id].rep.parentElement;
     if (pe) pe.removeChild(this.labels[id].rep);
+    if (this.labels[id].a)
+      this.labels[id].a.classList.remove("sh_hint_match");
   }
   const bar = document.getElementById("simple_hinting_info_bar");
   if (bar) bar.remove();
