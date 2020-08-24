@@ -74,8 +74,8 @@ SimpleHinting.prototype.highlight = function () {
     if (id !== 1)
       this.labels[id].rep.textContent = id;
   }
+  this.build_info_bar(matching_links);
   if (matching_links == 0) return false;
-  this.build_info_bar();
   if (matching_links == 1) {
     this.labels[this.input].a.classList.add("sh_hint_match");
   }
@@ -214,7 +214,7 @@ SimpleHinting.prototype.remove_ui = function () {
 }
 
 // Create keybinding info bar
-SimpleHinting.prototype.build_info_bar = function () {
+SimpleHinting.prototype.build_info_bar = function (matching_links) {
   let bar = document.getElementById("simple_hinting_info_bar");
   if (bar) bar.remove();
   bar = document.createElement("P");
@@ -224,7 +224,7 @@ SimpleHinting.prototype.build_info_bar = function () {
     "Clean all links ‘a’",
     "Quit ‘Echap’ or ‘c’"
   ];
-  if (this.input !== "") {
+  if (matching_links == 1) {
     texts.unshift(
       "Follow ‘f’ or ‘Enter’",
       "New Window ‘w’",
@@ -293,7 +293,7 @@ SimpleHinting.prototype.create_ui = function () {
       }
     }
   }
-  this.build_info_bar();
+  this.build_info_bar(0);
   this.ui_visible = true;
 }
 
