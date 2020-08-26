@@ -30,10 +30,28 @@ remove all green labels.
 ## Privacy
 
 This addon try to protect your privacy by removing unwanted tracking
-attributes from the URL you are trying to go to. In order to remove
-attributes from short URL (e.g. on Twitter), this addon call an
-[external web service][2], which is responsible for expanding this kind
-of links. The source code of this service is [available][3] too.
+parameters from the URL you are trying to go to. Another widespread
+privacy invading behavior consists by hiding real links behind a short
+link, which is responsible to track who click on which link, and
+when. In this later case, this addon call an [external web service][2],
+which will expand a tiny URL, before removing its tracking parameters,
+if any. That is why this addon ask for the permission to contact
+`unshorten.umaneti.net` host.
+
+To avoid asking too frequently to this [same remote web service][2] what
+to do about a link, this addon will download from it two lists:
+
+- a list of known tracking parameters, which will help it to remove
+  them from already expanded URLs without having to contact the remote
+  service;
+- a list of known shorten URL services, for which this addons must
+  contact the remote web service to resolve and clean them.
+
+This two lists are then stored in your web browser addons storage area
+(hence the permission to use it).
+
+The source code of the previously mentioned external web service is
+[available][3] too.
 
 ## Credits
 
