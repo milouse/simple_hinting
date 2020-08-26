@@ -30,13 +30,10 @@ remove all green labels.
 ## Privacy
 
 This addon try to protect your privacy by removing unwanted tracking
-attributes from the URL you are trying to go to. The list of the banned
-attributes is customizable in the addon options.
-
-In order to remove attributes from short URL (e.g. on Twitter), this
-addon call an [external web service][2], which is responsible for
-expanding this kind of links. The source code of this service is
-available [as a git repository][3].
+attributes from the URL you are trying to go to. In order to remove
+attributes from short URL (e.g. on Twitter), this addon call an
+[external web service][2], which is responsible for expanding this kind
+of links. The source code of this service is [available][3] too.
 
 ## Credits
 
