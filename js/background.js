@@ -112,3 +112,41 @@ browser.commands.onCommand.addListener(function(command) {
     });
   }
 });
+
+
+/**
+ * Sync domains and params info
+ */
+function onError(error) {
+  console.error(`[Simple Hinting extension] ${error}`);
+}
+
+function fetchUnwantedParams() {
+  return fetch("https://unshorten.umaneti.net/params").then(function(response) {
+    return response.json();
+  }).then(function(upstream_params) {
+    browser.storage.local.set({ "unwanted_params": upstream_params });
+  }).catch(onError);
+}
+
+function fetchTinyDomains() {
+  return fetch("https://unshorten.umaneti.net/domains").then(function(response) {
+    return response.json();
+  }).then(function(upstream_tiny_domains) {
+    browser.storage.local.set({ "tiny_domains_list": upstream_tiny_domains });
+  }).catch(onError);
+}
+
+let opts = ["sync_dt"];
+browser.storage.local.get(opts).then(function (result) {
+  let last_sync = result.sync_dt || 0;
+  let one_week_in_ms = 7 * 24 * 60 * 60 * 1000;
+  let now_in_ms = Date.now();
+  if ((last_sync + one_week_in_ms) < now_in_ms) {
+    // Time to sync again
+    console.log("[Simple Hinting extension] Synchronizing now params and domains.");
+    fetchTinyDomains();
+    fetchUnwantedParams();
+    browser.storage.local.set({ "sync_dt": now_in_ms });
+  }
+}, onError);

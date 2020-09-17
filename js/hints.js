@@ -13,43 +13,6 @@ const actionkeys = {
   "a": "cleanall"
 };
 
-function onError(error) {
-  let message = `[Simple Hinting extension] ${error}`;
-  let pref_msg_status = document.getElementById("save-status");
-  if (pref_msg_status) {
-    pref_msg_status.textContent = message;
-    pref_msg_status.style.color = "red";
-  } else {
-    console.error(message);
-  }
-}
-
-var unwanted_params = [];
-function fetchUnwantedParams() {
-  return fetch("https://unshorten.umaneti.net/params").then(
-    function(response) {
-      return response.json();
-    }, onError
-  ).then(
-    function(upstream_params) {
-      unwanted_params = upstream_params;
-      browser.storage.local.set({ "unwanted_params": unwanted_params });
-    }, onError
-  );
-}
-
-var tiny_domains = [];
-function fetchTinyDomains() {
-  return fetch("https://unshorten.umaneti.net/domains").then(
-    function(response) {
-      return response.json();
-    }, onError
-  ).then(function(upstream_tiny_domains) {
-    tiny_domains = upstream_tiny_domains;
-    browser.storage.local.set({ "tiny_domains_list": tiny_domains });
-  }, onError);
-}
-
 
 // Globals
 function SimpleHinting () {
@@ -335,8 +298,9 @@ function is_command (key) {
   let is_c = false;
   try {
     is_c = Object.keys(actionkeys).indexOf(key) !== -1;
-  } catch (_e) {
-    onError(`Failed reading key: ${key}`);
+  } catch {
+    let message = `[Simple Hinting extension] Failed reading key: ${key}`;
+    console.error(message);
   }
   return is_c;
 }
@@ -409,28 +373,23 @@ function fix_all_links () {
 }
 
 
+var unwanted_params = [];
+var tiny_domains = [];
 const main_simple_hinting = new SimpleHinting();
 
 function SimpleHintingManager(callback) {
   let opts = ["unwanted_params", "tiny_domains_list"];
   browser.storage.local.get(opts).then(function (result) {
-    let initMethods = [];
     if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
       unwanted_params = result.unwanted_params;
-    } else {
-      initMethods.push(fetchUnwantedParams());
     }
     if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
       tiny_domains = result.tiny_domains_list;
-    } else {
-      initMethods.push(fetchTinyDomains());
     }
-    if (initMethods.length > 0) {
-      Promise.all(initMethods).then(callback);
-    } else {
-      callback.call(null);
-    }
-  }, onError);
+    callback.call(null);
+  }).catch(function (error) {
+    console.error(`[Simple Hinting extension] ${error}`);
+  });
 }
 
 browser.runtime.onMessage.addListener(function(data, sender) {
