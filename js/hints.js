@@ -13,41 +13,18 @@ const actionkeys = {
   "a": "cleanall"
 };
 
-function onError(error) {
-  let message = `[Simple Hinting extension] ${error}`;
-  let pref_msg_status = document.getElementById("save-status");
-  if (pref_msg_status) {
-    pref_msg_status.textContent = message;
-    pref_msg_status.style.color = "red";
-  } else {
-    console.error(message);
-  }
+// Cleaned links counter
+var clean_links_counter = 0;
+function reset_links_counter() {
+  clean_links_counter = 0;
+  browser.runtime.sendMessage({ "message": 0, "type": "updatebadge" });
 }
 
-var unwanted_params = [];
-function fetchUnwantedParams() {
-  return fetch("https://unshorten.umaneti.net/params").then(
-    function(response) {
-      return response.json();
-    }, onError
-  ).then(
-    function(upstream_params) {
-      unwanted_params = upstream_params;
-      browser.storage.local.set({ "unwanted_params": unwanted_params });
-    }, onError
-  );
-}
-
-var tiny_domains = [];
-function fetchTinyDomains() {
-  return fetch("https://unshorten.umaneti.net/domains").then(
-    function(response) {
-      return response.json();
-    }, onError
-  ).then(function(upstream_tiny_domains) {
-    tiny_domains = upstream_tiny_domains;
-    browser.storage.local.set({ "tiny_domains_list": tiny_domains });
-  }, onError);
+function increment_links_counter() {
+  clean_links_counter += 1;
+  browser.runtime.sendMessage({
+    "message": clean_links_counter, "type": "updatebadge"
+  });
 }
 
 
@@ -61,19 +38,25 @@ function SimpleHinting () {
 
 // functions
 SimpleHinting.prototype.highlight = function () {
-  var at_least_one_match = false;
+  var matching_links = 0;
   for (const id in this.labels) {
     if (this.input && id.match("^" + this.input) !== null) {
-      at_least_one_match = true;
+      matching_links++;
       this.labels[id].rep.classList.add("sh_hint_hl");
     } else {
       this.labels[id].rep.classList.remove("sh_hint_hl");
     }
+    // Wait for next check to add the sh_hint_match class back
+    this.labels[id].a.classList.remove("sh_hint_match");
     if (id !== 1)
       this.labels[id].rep.textContent = id;
   }
-  this.build_info_bar();
-  return at_least_one_match;
+  this.build_info_bar(matching_links);
+  if (matching_links == 0) return false;
+  if (matching_links == 1) {
+    this.labels[this.input].a.classList.add("sh_hint_match");
+  }
+  return true;
 }
 
 SimpleHinting.prototype.clean_attributes = function (url_part, symbol) {
@@ -106,22 +89,17 @@ SimpleHinting.prototype.clean_link = function (link) {
   return link.toString();
 }
 
-SimpleHinting.prototype.unshorten_link = function (link, success) {
-  if (tiny_domains.indexOf(link.hostname) === -1) {
-    return success.call(this, link);
+SimpleHinting.prototype.unshorten_link = async function (link, success) {
+  const old_link = link.toString();
+  const uri = new URL(old_link);
+  if (tiny_domains.indexOf(uri.hostname) === -1) {
+    return success.call(this, uri, old_link);
   }
-  try {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://unshorten.umaneti.net/c?url=" + link.href);
-    xhr.onload = () => {
-      link.href = xhr.responseText.trim();
-      success.call(this, link);
-    };
-    xhr.onerror = () => { throw xhr.statusText; };
-    xhr.send();
-  } catch (e) {
-    onError(`Ajax failed ${e}`);
-  }
+  return fetch(
+    "https://unshorten.umaneti.net/c?url=" + uri.toString()
+  ).then(
+    (response) => response.text()
+  ).then((body) => success.call(this, new URL(body.trim()), old_link));
 }
 
 SimpleHinting.prototype.update_link = function (link, cl) {
@@ -155,7 +133,7 @@ SimpleHinting.prototype.view_link = function () {
       this.labels[id].rep.classList.add("sh_hint_view");
       this.labels[id].rep.textContent = base_text + col +
         browser.i18n.getMessage("parsingPlaceholder");
-      this.unshorten_link(this.labels[id].a, function(long_link) {
+      this.unshorten_link(this.labels[id].a, function(long_link, old_link) {
         let cl = this.clean_link(long_link);
         if (this.update_link(this.labels[id].a, cl)) {
           this.labels[id].rep.textContent = base_text;
@@ -163,12 +141,15 @@ SimpleHinting.prototype.view_link = function () {
         } else {
           this.labels[id].rep.textContent = base_text + col + cl;
         }
+        if (long_link.toString() != old_link) {
+          increment_links_counter();
+        }
       });
     }
   }
 }
 
-SimpleHinting.prototype.open_link = function (keyname) {
+SimpleHinting.prototype.open_link = async function (keyname) {
   let a = null;
   if (this.labels[this.input]) {
     a = this.labels[this.input].a;
@@ -197,6 +178,8 @@ SimpleHinting.prototype.remove_ui = function () {
   for (let id in this.labels) {
     let pe = this.labels[id].rep.parentElement;
     if (pe) pe.removeChild(this.labels[id].rep);
+    if (this.labels[id].a)
+      this.labels[id].a.classList.remove("sh_hint_match");
   }
   const bar = document.getElementById("simple_hinting_info_bar");
   if (bar) bar.remove();
@@ -206,7 +189,7 @@ SimpleHinting.prototype.remove_ui = function () {
 }
 
 // Create keybinding info bar
-SimpleHinting.prototype.build_info_bar = function () {
+SimpleHinting.prototype.build_info_bar = async function (matching_links) {
   let bar = document.getElementById("simple_hinting_info_bar");
   if (bar) bar.remove();
   bar = document.createElement("P");
@@ -216,7 +199,7 @@ SimpleHinting.prototype.build_info_bar = function () {
     "Clean all links ‘a’",
     "Quit ‘Echap’ or ‘c’"
   ];
-  if (this.input !== "") {
+  if (matching_links == 1) {
     texts.unshift(
       "Follow ‘f’ or ‘Enter’",
       "New Window ‘w’",
@@ -252,7 +235,7 @@ SimpleHinting.prototype.create_ui = function () {
 
   for (let i = 0; i < ankers.length; i++) {
     const a = ankers[i];
-    if (a.tagName === "A" && !a.href) continue;
+    if (a.tagName === "A" && !a.hasAttribute("href")) continue;
     // Are you visible?
     if (a.hidden || a.style.display === "none" ||
         a.style.visibility === "hidden") {
@@ -285,7 +268,7 @@ SimpleHinting.prototype.create_ui = function () {
       }
     }
   }
-  this.build_info_bar();
+  this.build_info_bar(0);
   this.ui_visible = true;
 }
 
@@ -314,7 +297,7 @@ SimpleHinting.prototype.fix_one_link = function (link_uri) {
     d.textContent = browser.i18n.getMessage("parsingPlaceholder");
     this.ui_visible = true;
     this.labels[i] = { "rep": d };
-    this.unshorten_link(link, function(long_link) {
+    this.unshorten_link(link, function(long_link, old_link) {
       let cl = this.clean_link(long_link);
       d.textContent = cl;
       if (this.update_link(link, cl)) {
@@ -322,6 +305,9 @@ SimpleHinting.prototype.fix_one_link = function (link_uri) {
         // In the case where the URL is directly visible, we remove
         // the hint to avoid repetitive information
         this.remove_ui();
+      }
+      if (long_link.toString() != old_link) {
+        increment_links_counter();
       }
       link.blur();
     });
@@ -333,8 +319,9 @@ function is_command (key) {
   let is_c = false;
   try {
     is_c = Object.keys(actionkeys).indexOf(key) !== -1;
-  } catch (_e) {
-    onError(`Failed reading key: ${key}`);
+  } catch {
+    let message = `[Simple Hinting extension] Failed reading key: ${key}`;
+    console.error(message);
   }
   return is_c;
 }
@@ -350,6 +337,7 @@ function input_key_listener (e) {
       main_simple_hinting.remove_ui();
 
   } else if (key === viewkey) {
+    reset_links_counter();
     main_simple_hinting.view_link(key);
 
   } else if (is_command(key)) {
@@ -385,11 +373,11 @@ function toggle_main_simple_hinting_ui () {
 }
 
 function fix_all_links () {
+  reset_links_counter();
   const all_page_links = document.querySelectorAll("A");
   var already_done = [];
-  var totally_done = 0;
   for (let i = 0; i < all_page_links.length; i++) {
-    let link_uri = all_page_links[i].href.trim();
+    let link_uri = all_page_links[i].toString().trim();
     if (link_uri === "" || link_uri[0] == "#") continue;
     if (already_done.indexOf(link_uri) !== -1) continue;
     already_done.push(link_uri);
@@ -397,44 +385,34 @@ function fix_all_links () {
     sh.fix_one_link(link_uri);
     // In any case, remove ui to avoid spam
     sh.remove_ui();
-    totally_done += 1;
   }
-  browser.runtime.sendMessage({
-    "url": document.location.href.toString(),
-    "message": totally_done,
-    "type": "updatebadge"
-  });
 }
 
 
+var unwanted_params = [];
+var tiny_domains = [];
 const main_simple_hinting = new SimpleHinting();
 
 function SimpleHintingManager(callback) {
   let opts = ["unwanted_params", "tiny_domains_list"];
   browser.storage.local.get(opts).then(function (result) {
-    let initMethods = [];
     if (result.unwanted_params && Array.isArray(result.unwanted_params)) {
       unwanted_params = result.unwanted_params;
-    } else {
-      initMethods.push(fetchUnwantedParams());
     }
     if (result.tiny_domains_list && Array.isArray(result.tiny_domains_list)) {
       tiny_domains = result.tiny_domains_list;
-    } else {
-      initMethods.push(fetchTinyDomains());
     }
-    if (initMethods.length > 0) {
-      Promise.all(initMethods).then(callback);
-    } else {
-      callback.call(null);
-    }
-  }, onError);
+    callback.call(null);
+  }).catch(function (error) {
+    console.error(`[Simple Hinting extension] ${error}`);
+  });
 }
 
 browser.runtime.onMessage.addListener(function(data, sender) {
   if (sender.id !== "simple_hinting@umaneti.net") return false;
   if (!data["message"]) return false;
   if (data.message === "fix_one") {
+    reset_links_counter();
     if (!data["link_uri"]) return false;
     let link_uri = data.link_uri.trim();
     if (link_uri === "" || link_uri[0] === "#") return false;
