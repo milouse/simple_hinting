@@ -13,6 +13,20 @@ const actionkeys = {
   "a": "cleanall"
 };
 
+// Cleaned links counter
+var clean_links_counter = 0;
+function reset_links_counter() {
+  clean_links_counter = 0;
+  browser.runtime.sendMessage({ "message": 0, "type": "updatebadge" });
+}
+
+function increment_links_counter() {
+  clean_links_counter += 1;
+  browser.runtime.sendMessage({
+    "message": clean_links_counter, "type": "updatebadge"
+  });
+}
+
 
 // Globals
 function SimpleHinting () {
@@ -76,15 +90,16 @@ SimpleHinting.prototype.clean_link = function (link) {
 }
 
 SimpleHinting.prototype.unshorten_link = async function (link, success) {
-  const uri = new URL(link.toString());
+  const old_link = link.toString();
+  const uri = new URL(old_link);
   if (tiny_domains.indexOf(uri.hostname) === -1) {
-    return success.call(this, uri);
+    return success.call(this, uri, old_link);
   }
   return fetch(
     "https://unshorten.umaneti.net/c?url=" + uri.toString()
   ).then(
     (response) => response.text()
-  ).then((body) => success.call(this, new URL(body.trim())))
+  ).then((body) => success.call(this, new URL(body.trim()), old_link));
 }
 
 SimpleHinting.prototype.update_link = function (link, cl) {
@@ -118,13 +133,16 @@ SimpleHinting.prototype.view_link = function () {
       this.labels[id].rep.classList.add("sh_hint_view");
       this.labels[id].rep.textContent = base_text + col +
         browser.i18n.getMessage("parsingPlaceholder");
-      this.unshorten_link(this.labels[id].a, function(long_link) {
+      this.unshorten_link(this.labels[id].a, function(long_link, old_link) {
         let cl = this.clean_link(long_link);
         if (this.update_link(this.labels[id].a, cl)) {
           this.labels[id].rep.textContent = base_text;
           this.labels[id].rep.classList.remove("sh_hint_view");
         } else {
           this.labels[id].rep.textContent = base_text + col + cl;
+        }
+        if (long_link.toString() != old_link) {
+          increment_links_counter();
         }
       });
     }
@@ -279,7 +297,7 @@ SimpleHinting.prototype.fix_one_link = function (link_uri) {
     d.textContent = browser.i18n.getMessage("parsingPlaceholder");
     this.ui_visible = true;
     this.labels[i] = { "rep": d };
-    this.unshorten_link(link, function(long_link) {
+    this.unshorten_link(link, function(long_link, old_link) {
       let cl = this.clean_link(long_link);
       d.textContent = cl;
       if (this.update_link(link, cl)) {
@@ -287,6 +305,9 @@ SimpleHinting.prototype.fix_one_link = function (link_uri) {
         // In the case where the URL is directly visible, we remove
         // the hint to avoid repetitive information
         this.remove_ui();
+      }
+      if (long_link.toString() != old_link) {
+        increment_links_counter();
       }
       link.blur();
     });
@@ -316,6 +337,7 @@ function input_key_listener (e) {
       main_simple_hinting.remove_ui();
 
   } else if (key === viewkey) {
+    reset_links_counter();
     main_simple_hinting.view_link(key);
 
   } else if (is_command(key)) {
@@ -351,9 +373,9 @@ function toggle_main_simple_hinting_ui () {
 }
 
 function fix_all_links () {
+  reset_links_counter();
   const all_page_links = document.querySelectorAll("A");
   var already_done = [];
-  var totally_done = 0;
   for (let i = 0; i < all_page_links.length; i++) {
     let link_uri = all_page_links[i].toString().trim();
     if (link_uri === "" || link_uri[0] == "#") continue;
@@ -363,13 +385,7 @@ function fix_all_links () {
     sh.fix_one_link(link_uri);
     // In any case, remove ui to avoid spam
     sh.remove_ui();
-    totally_done += 1;
   }
-  browser.runtime.sendMessage({
-    "url": document.location.href.toString(),
-    "message": totally_done,
-    "type": "updatebadge"
-  });
 }
 
 
@@ -396,6 +412,7 @@ browser.runtime.onMessage.addListener(function(data, sender) {
   if (sender.id !== "simple_hinting@umaneti.net") return false;
   if (!data["message"]) return false;
   if (data.message === "fix_one") {
+    reset_links_counter();
     if (!data["link_uri"]) return false;
     let link_uri = data.link_uri.trim();
     if (link_uri === "" || link_uri[0] === "#") return false;

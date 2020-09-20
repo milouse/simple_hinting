@@ -33,32 +33,23 @@ function injectJsAndCssIfNecessary(active_tab_id) {
 /**
  * Listener for events from the content scripts
  */
-var handled_links = 0;
-var last_update_badge = null;
 function answerContentScriptRequests (request, sender) {
   if (sender.id != "simple_hinting@umaneti.net") return;
-  if (!request.url) return;
   if (!request.type) request["type"] = "newtab";
+  if (request.type === "updatebadge") {
+    // Check with typeof as 0 is falsy, thus the badge is never updated
+    // to 0 with a simple check on the existence of request.message.
+    if (typeof(request.message) == "number" && sender.tab && sender.tab.id) {
+      browser.browserAction.setBadgeText(
+        { "text": request.message.toString(), "tabId": sender.tab.id });
+    }
+    return;
+  }
+  if (!request.url) return;
   if (request.type === "newwin") {
     browser.windows.create({ "url": request.url });
   } else if (request.type === "incognito") {
     browser.windows.create({ "url": request.url, "incognito": true });
-  } else if (request.type === "updatebadge") {
-    let now = Date.now()
-    /* Some page may generate a lot of subcount we have to add for the
-     * badge. But some time later, if the user want to recompute the
-     * links, we should not add the new batch to the old one. 2 seconds
-     * seems to be a good interval to differentiate machine from human.
-     */
-    if (last_update_badge && (now - last_update_badge) > 2000) {
-      handled_links = 0;
-    }
-    last_update_badge = now;
-    if (request.message && sender.tab && sender.tab.id) {
-      handled_links += request.message;
-      browser.browserAction.setBadgeText(
-        { "text": handled_links.toString(), "tabId": sender.tab.id });
-    }
   } else {
     browser.tabs.create({ "url": request.url });
   }
