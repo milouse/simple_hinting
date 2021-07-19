@@ -11,10 +11,10 @@
   },
   "author": "Étienne Deparis",
   "homepage_url": "https://git.umaneti.net/simple_hinting/about/",
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
       "id": "simple_hinting@umaneti.net",
-      "strict_min_version": "57.0"
+      "strict_min_version": "79.0"
     }
   },
   "permissions": [
